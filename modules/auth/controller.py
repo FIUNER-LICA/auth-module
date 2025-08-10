@@ -30,3 +30,14 @@ def authenticate_user(email, password):
     if verify_password(password, user['password']):
         return True
     return False
+
+def create_or_get_user_oauth(email, name=None, provider=None):
+    """
+    Si el usuario no existe, lo crea marcado como verificado (porque viene de OAuth).
+    Devuelve el dict del usuario.
+    """
+    user = users_db.get(email)
+    if user:
+        return user
+    users_db[email] = {'password': None, 'verified': True, 'name': name, 'oauth': provider}
+    return users_db[email]

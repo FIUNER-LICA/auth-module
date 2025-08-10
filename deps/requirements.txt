@@ -1,4 +1,5 @@
 flask
-flask_session
+Flask-Session
 Flask-Mail
 dotenv
+Flask-Dance

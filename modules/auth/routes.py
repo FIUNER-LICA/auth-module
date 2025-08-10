@@ -1,6 +1,6 @@
 from flask import Blueprint, request, session, redirect, url_for, render_template, flash
-from modules.auth.controller import register_user, authenticate_user, verify_user
-
+from modules.auth.controller import register_user, authenticate_user, verify_user,create_or_get_user_oauth
+from modules.auth.oauth import google, github
 auth_bp = Blueprint('auth', __name__)
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
@@ -53,3 +53,26 @@ def dashboard():
         flash("Debes iniciar sesión para acceder.", "warning")
         return redirect(url_for('auth.login'))
     return render_template('dashboard.html', email=session['email'])
+
+@auth_bp.route("/google")
+def google_login():
+    if not google.authorized:
+        return redirect(url_for("auth.google_login"))
+    resp = google.get("/oauth2/v2/userinfo")
+    user_info = resp.json()
+    create_or_get_user_oauth(email=user_info["email"], name=user_info.get("name"))
+    return redirect(url_for("index"))
+
+# Login con GitHub
+@auth_bp.route("/github")
+def github_login():
+    if not github.authorized:
+        return redirect(url_for("auth.github_login"))
+    resp = github.get("/user")
+    user_info = resp.json()
+    email = user_info.get("email")
+    if not email:  # A veces GitHub no da el email, hay que pedirlo aparte
+        emails_resp = github.get("/user/emails")
+        email = emails_resp.json()[0]["email"]
+    create_or_get_user_oauth(email=email, name=user_info.get("login"))
+    return redirect(url_for("index"))
