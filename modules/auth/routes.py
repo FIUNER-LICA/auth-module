@@ -3,6 +3,11 @@ from modules.auth.controller import register_user, authenticate_user, verify_use
 from modules.auth.oauth import google, github
 auth_bp = Blueprint('auth', __name__)
 
+
+@auth_bp.route('/inicio')
+def inicio():
+    return redirect(url_for('index'))
+
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     if request.method == 'POST':
@@ -56,23 +61,26 @@ def dashboard():
 
 @auth_bp.route("/google")
 def google_login():
-    if not google.authorized:
-        return redirect(url_for("auth.google_login"))
-    resp = google.get("/oauth2/v2/userinfo")
-    user_info = resp.json()
-    create_or_get_user_oauth(email=user_info["email"], name=user_info.get("name"))
-    return redirect(url_for("index"))
+    flash("Inicio de sesión con Google en desarrollo", "info")
+    # if not google.authorized:
+    #     return redirect(url_for("auth.google_login"))
+    # resp = google.get("/oauth2/v2/userinfo")
+    # user_info = resp.json()
+    # create_or_get_user_oauth(email=user_info["email"], name=user_info.get("name"))
+    return redirect(url_for("auth.login"))
 
 # Login con GitHub
 @auth_bp.route("/github")
 def github_login():
-    if not github.authorized:
-        return redirect(url_for("auth.github_login"))
-    resp = github.get("/user")
-    user_info = resp.json()
-    email = user_info.get("email")
-    if not email:  # A veces GitHub no da el email, hay que pedirlo aparte
-        emails_resp = github.get("/user/emails")
-        email = emails_resp.json()[0]["email"]
-    create_or_get_user_oauth(email=email, name=user_info.get("login"))
-    return redirect(url_for("index"))
+    flash("Inicio de sesión con GitHub en desarrollo", "info")
+
+    # if not github.authorized:
+    #     return redirect(url_for("auth.github_login"))
+    # resp = github.get("/user")
+    # user_info = resp.json()
+    # email = user_info.get("email")
+    # if not email:  # A veces GitHub no da el email, hay que pedirlo aparte
+    #     emails_resp = github.get("/user/emails")
+    #     email = emails_resp.json()[0]["email"]
+    # create_or_get_user_oauth(email=email, name=user_info.get("login"))
+    return redirect(url_for("auth.login"))
