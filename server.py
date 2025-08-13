@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from flask_session import Session
 from flask_mail import Mail
 from modules.auth.routes import auth_bp
@@ -23,7 +23,7 @@ def create_app():
 
     @app.route('/')
     def index():
-        return "Portal de Autorización del LICA"
+        return render_template("inicio.html")
 
     return app
 
