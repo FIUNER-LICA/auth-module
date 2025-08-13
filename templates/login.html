@@ -1,20 +1,26 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Login</h2>
-<form method="post" action="{{ url_for('auth.login') }}">
-  <div class="mb-3">
-    <label for="email" class="form-label">Correo electrónico</label>
-    <input type="email" class="form-control" id="email" name="email" required>
+<div class="inicio-container">
+  <div class="text-center mb-3">
+    <img src="{{ url_for('static', filename='logo-LICA-512.png') }}" alt="Logo" width="350"  class=" mb-3" style="border-radius:10px;">
   </div>
-  <div class="mb-3">
-    <label for="password" class="form-label">Contraseña</label>
-    <input type="password" class="form-control" id="password" name="password" required>
+  
+  <form method="post" action="{{ url_for('auth.login') }}">
+    <div class="mb-3">
+      <label for="email" class="form-label">Correo electrónico</label>
+      <input type="email" class="form-control" id="email" name="email" required>
+    </div>
+    <div class="mb-3">
+      <label for="password" class="form-label">Contraseña</label>
+      <input type="password" class="form-control" id="password" name="password" required>
+    </div>
+    <button type="submit" class="btn btn-primary w-100">Iniciar sesión</button>
+  </form>
+  <p class="mt-3 text-center">¿No tenés cuenta? <a href="{{ url_for('auth.register') }}">Registrate aquí</a></p>
+  <div class="d-flex flex-column gap-2 mt-2">
+    <a class="btn btn-outline-danger w-100" href="{{ url_for('auth.google_login') }}">Entrar con Google</a>
+    <a class="btn btn-outline-dark w-100" href="{{ url_for('auth.github_login') }}">Entrar con GitHub</a>
   </div>
-  <button type="submit" class="btn btn-primary">Iniciar sesión</button>
-</form>
-<p class="mt-3">¿No tenés cuenta? <a href="{{ url_for('auth.register') }}">Registrate aquí</a></p>
-<a href="{{ url_for('auth.google_login') }}">Entrar con Google</a><br>
-<a href="{{ url_for('auth.github_login') }}">Entrar con GitHub</a>
-
+</div>
 {% endblock %}
