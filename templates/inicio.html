@@ -1,29 +1,24 @@
 {% extends 'base.html' %}
 
 {% block content %}
-            <div class="inicio-container">
-                <div class="text-center mb-3">
-                        <img src="{{ url_for('static', filename='logo-LICA-512.png') }}" alt="Logo" width="350"  class=" mb-3" style="border-radius:10px;">
-                    <h1 class="mb-1">Registro de usuarios e inicio de sesión</h1>
-                </div>
-                
-                <p>
-                        Módulo para el registro de usuarios e inicio de sesiones utilizando correo electrónico. 
-                        
-                </p>
-                <p>
-                    Incluye:
-                </p>
-                <ul class="mb-3">
-                    
-                        <li>Registro de usuario.</li>
-                        <li>Confirmación de cuenta por correo electrónico.</li>
-                        <li>Inicio de sesión.</li>
-                        
-                </ul>
-                <div class="d-grid gap-2">
-                    <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Iniciar sesión</a>
-                    <a href="{{ url_for('auth.register') }}" class="btn btn-outline-primary">Registrarse</a>
-                </div>
-            </div>
+    <p>
+            Módulo para el registro de usuarios e inicio de sesiones utilizando correo electrónico. 
+            
+    </p>
+    <p>
+        Incluye:
+    </p>
+        <ul class="mb-3">
+        
+            <li>Registro de usuario.</li>
+            <li>Confirmación de cuenta por correo electrónico.</li>
+            <li>Inicio de sesión.</li>
+            <li>Recuperación de contraseña.</li>
+            
+        </ul>
+    <div class="d-grid gap-2">
+        <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Iniciar sesión</a>
+        <a href="{{ url_for('auth.register') }}" class="btn btn-outline-primary">Registrarse</a>
+    </div>
+            
 {% endblock %}
