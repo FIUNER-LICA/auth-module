@@ -24,19 +24,26 @@
 </head>
 <body class="bg-light">
 
-<div class="container mt-4">
-  {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, message in messages %}
-        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-          {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-      {% endfor %}
-    {% endif %}
-  {% endwith %}
-  <div class="container py-4">
-    {% block content %}{% endblock %}
+  <div class="inicio-container">
+    <div class="text-center mb-3">
+      <img src="{{ url_for('static', filename='logo-LICA-512.png') }}" alt="Logo" width="350"  class=" mb-3" style="border-radius:10px;">
+      <h2 class="mb-1">Módulo de registro de usuarios e inicio de sesión</h2>
+    </div>
+    <div class="container mt-4">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    {% block content %}
+    {% endblock %}
+  
   </div>
 </div>
 
