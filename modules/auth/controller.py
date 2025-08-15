@@ -41,3 +41,12 @@ def create_or_get_user_oauth(email, name=None, provider=None):
         return user
     users_db[email] = {'password': None, 'verified': True, 'name': name, 'oauth': provider}
     return users_db[email]
+
+def send_password_recovery_email(email):
+    if email not in users_db:
+        raise ValueError("No existe usuario con ese correo")
+    else:
+        token = generate_confirmation_token(email)
+        recovery_url = f"http://localhost:5000/reset_password/{token}"
+        send_email(email, "Recuperación de contraseña", f"Para restablecer tu contraseña, haz clic aquí: {recovery_url}")
+        return True

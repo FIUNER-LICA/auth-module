@@ -1,5 +1,5 @@
 from flask import Blueprint, request, session, redirect, url_for, render_template, flash
-from modules.auth.controller import register_user, authenticate_user, verify_user,create_or_get_user_oauth
+from modules.auth.controller import register_user, authenticate_user, verify_user,send_password_recovery_email
 from modules.auth.oauth import google, github
 auth_bp = Blueprint('auth', __name__)
 
@@ -20,6 +20,20 @@ def register():
         except ValueError as e:
             flash(str(e), "danger")
     return render_template('register.html')
+
+@auth_bp.route('/pwrecovery', methods=['GET', 'POST'])
+def pw_recovery():
+    if request.method == 'POST':
+        email = request.form['email']
+        try:
+            send_password_recovery_email(email)
+            # Aquí deberías implementar la lógica para enviar un correo de recuperación
+            flash("Si el correo existe, se ha enviado un enlace de recuperación.", "info")
+            return redirect(url_for('auth.login'))
+        except ValueError as e:
+            flash(str(e), "danger")
+    else:
+        return render_template('pwrecovery.html')
 
 @auth_bp.route('/verify/<token>')
 def verify(token):
@@ -69,7 +83,6 @@ def google_login():
     # create_or_get_user_oauth(email=user_info["email"], name=user_info.get("name"))
     return redirect(url_for("auth.login"))
 
-# Login con GitHub
 @auth_bp.route("/github")
 def github_login():
     flash("Inicio de sesión con GitHub en desarrollo", "info")
