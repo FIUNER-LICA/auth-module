@@ -1,4 +1,4 @@
-from modules.auth.security import hash_password, verify_password
+from modules.auth.security import hash_password, verify_password,is_password_strong, is_password_valid
 from modules.auth.email_verification import generate_confirmation_token, confirm_token, send_email
 
 # Simulación base de datos simple
@@ -50,3 +50,18 @@ def send_password_recovery_email(email):
         recovery_url = f"http://localhost:5000/reset_password/{token}"
         send_email(email, "Recuperación de contraseña", f"Para restablecer tu contraseña, haz clic aquí: {recovery_url}")
         return True
+    
+def is_a_valid_password(password: str, repassword:str) -> tuple[bool,str]:
+    """
+    Verifica si la contraseña cumple con la regla y si son contraseñas son iguales .
+    """
+    message = "La contraseña es válida."
+    result = True
+    if not is_password_strong(password):
+        message = "La contraseña debe tener al menos 8 caracteres."
+        result = False
+    elif not is_password_valid(password, repassword):
+        message = "Las contraseñas no coinciden."
+        result = False
+
+    return result, message
