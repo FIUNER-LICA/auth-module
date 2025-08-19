@@ -1,5 +1,5 @@
 from flask import Blueprint, request, session, redirect, url_for, render_template, flash
-from modules.auth.controller import register_user, authenticate_user, verify_user,send_password_recovery_email
+from modules.auth.controller import register_user, authenticate_user, verify_user,send_password_recovery_email,is_a_valid_password
 from modules.auth.oauth import google, github
 auth_bp = Blueprint('auth', __name__)
 
@@ -13,12 +13,18 @@ def register():
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
-        try:
-            register_user(email, password)
-            flash("Revisa tu correo para verificar tu cuenta.", "success")
-            return redirect(url_for('auth.login'))
-        except ValueError as e:
-            flash(str(e), "danger")
+        repassword = request.form['repassword']
+        is_valid,message = is_a_valid_password(password, repassword)
+        if not is_valid:
+            flash(message, "danger")
+            return redirect(url_for('auth.register'))
+        else:
+            try:
+                register_user(email, password)
+                flash("Revisa tu correo para verificar tu cuenta.", "success")
+                return redirect(url_for('auth.login'))
+            except ValueError as e:
+                flash(str(e), "danger")
     return render_template('register.html')
 
 @auth_bp.route('/pwrecovery', methods=['GET', 'POST'])
