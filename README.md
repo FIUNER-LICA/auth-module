@@ -1,94 +1,67 @@
+# Módulo de autenticación de usuario
+Este proyecto consiste en un módulo de autenticación de usuario.
 
+## Descripción
 
----
-
-# 📌 **Plantilla para README de Proyectos Flask**
-
-🚀 *Esta plantilla está diseñada para proyectos Flask y puede ser adaptada según tus necesidades.*
-
-⚠️ **IMPORTANTE:**
-
-- Este archivo README es una **plantilla**. Personalizarlo con información específica del proyecto.
-- Dentro de las carpetas del proyecto pueden existir archivos con instrucciones adicionales. Revisarlos antes de eliminar o modificar partes del mismo.
-- **Borrar esta sección una vez que hayas adaptado el README al proyecto.**
-
----
-
-# 🏷Título del Proyecto
-
-Este proyecto consiste en ... 
-
-_Escribir breve descripción y propósito del proyecto_
-
----
-
-## 🏗Descripción o Arquitectura General
-
-_Descripción más detallada que puede incluir la estructura y organización del mismo_
-
-Estructura del proyecto:
-```
-.
-├── .vscode/                 # Carpeta de configuración de VSCode
-├── apps/                    # Aplicaciones secundarias
-├── data/                    # Archivos de datos del proyecto
-├── deps/
-|   ├── requirements.txt     # Dependencias del proyecto
-├── docs/                    # Documentación del proyecto
-├── modules/                 # Módulos del proyecto
-|   ├── config.py            # Carga y define la configuración de la aplicación
-├── static/                  # Archivos estáticos (CSS, JS, imágenes)                
-|   ├── images/           
-|   ├── css/           
-├── templates/               # Plantillas HTML
-|   ├── index.html
-├── tests/                   # Pruebas unitarias
-├── .gitignore
-├── README.md                # Este archivo
-└── server.py                # Punto de entrada de la aplicación Flask
-```
-
----
-
-## 📑Dependencias
-
-Requisitos previos:
-
+El repositorio tiene dos ramas. En la rama ```main``` se lleva el desarrollo y la rama core-only contiene la última versión estable para usar.
+ 
+## Dependencias
 1. **Python 3.xx a 3.xx** (versión utilizada 3.xx.x)
-2. **Flask** (`pip install flask`)
-3. 
-
-Herramientas adicionales:
-
-_Acá podrían estar las herramientas o programas adicionales necesarios que no sean módulos de python, mencionar aquí como instalarlas_
-
+2. **Flask** (`pip install flask`) 
 ---
+## Flujo de trabajo en este repo
+1. Se trabaja en la rama main
+2. Cuando esté listo para usar, se actualiza la rama core-only
+```bash
+   # Cambiar a la rama core-only
+   git checkout core-only
 
-## 🚀Instalación y Configuración
+   # Traer desde main solo la carpeta modules, reemplazando contenido previo
+   git checkout main -- modules/
+```
+3. Hacer commit y push
+```bash
+   git add modules/
+   git commit -m "Actualización core-only desde main"
+   git push origin core-only
+```
 
-Pasos para configurar el proyecto:
-
-1. **Clonar el repositorio** (o descargar zip)
+## Cómo usarlo en mis proyectos
+Debes colocar el contenido de modules de este proyecto en la carperta modules de tu proyecto --que lo llamaremos **mi_proyecto**--. La estructura de carpetas de mi_proyecto luego de integrar el módulo debería quedar así:
    ```bash
-   git clone https://github.com/usuario/proyecto-flask.git
-   cd proyecto-flask
-   ```
-2. **Crear entorno virtual venv** y activarlo
-3. **Instalar dependencias**:
+   mi_proyecto/
+   │
+   ├── modules/
+   │ └── auth/ # Código de autenticación proveniente de este repo (rama core-only)
+   ├── tests/ 
+   ├── otras/  
+   ├── carpetas/  
+   └── main.py # Punto de entrada de mi_proyecto
+```
+### Pasos para integrar el repositorio
+
+1. Posicionarse en el repo "mi_proyecto"
    ```bash
-   pip install -r requirements.txt
+   cd /ruta/a/mi_proyecto
    ```
-4. **Ejecutar Flask**
-5. 
+2. Agregar el modulo de autenticación
+   ```bash 
+   git remote add auth_repo https://github.com/FIUNER-LICA/autentication-module.git
+   ```
+3. Integrar el código de la rama core-only en la carpeta modules/auth:
+   ```bash
+   git subtree add --prefix=modules/auth auth_repo core-only --squash
+   ```
+4. Verificar la estructura
+   ```bash
+   tree -L 2
+   ```
+### Cómo actualizar mi_proyecto cuando el módulo de autenticación tenga nueva versión
+```bash
+   git subtree pull --prefix=modules/auth auth_repo core-only --squash
+```
 
----
 
-## 💻Guía de uso
-_Explicar la funcionalidad de la aplicación_
-- _Cúales son las rutas principales y cómo navegarlas._
-- _Si se requiere autenticación o no._
-- _Se pueden enumerar las páginas principales y se pueden incluir comandos o capturas de pantalla para ilustrar procesos._
----
 
 ## 🔎Pruebas y Verificación
 
