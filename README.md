@@ -6,7 +6,9 @@ Este proyecto consiste en un módulo de autenticación de usuario.
 El repositorio tiene dos ramas. En la rama ```main``` se lleva el desarrollo y la rama core-only contiene la última versión estable para usar.
  
 ## Dependencias
+
 Las dependencias generales de este proyecto que están en ```deps/requirements.txt``` corresponde al funcionamiento integral de las aplicaciones de prueba. Las dependendencias específicas de la parte que se importa desde otros proyectos está ```modules/requirements.txt```.
+
 ---
 ## Flujo de trabajo en este repo
 1. Se trabaja en la rama main
