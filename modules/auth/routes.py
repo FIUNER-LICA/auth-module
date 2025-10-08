@@ -51,6 +51,10 @@ def pw_recovery():
 @auth_bp.route('/pwreset', methods=['GET', 'POST'])
 def pw_reset():
     if request.method == 'POST':
+        if 0 < session['pw_reset_number_access_to_pw_reset']:  # Por si se trata de reentrar a este endpoint para hackear cambio de contraseña
+            flash("Restablecimiento de contraseña expirado.", "danger")
+            return redirect(url_for('auth.login'))
+        session['pw_reset_number_access_to_pw_reset'] += 1 # Permitido un solo acceso a este endpoint desde el inicio del proceso de recuperación
         email = session['pw_reset_email']
         password = request.form['password']
         repassword = request.form['repassword']
@@ -74,6 +78,7 @@ def pw_reset_token(token):
     email = verify_user_pw_reset(token)
     if email is not None:
         session['pw_reset_email'] = email
+        session['pw_reset_number_access_to_pw_reset'] = 0
         flash("Correo verificado, ya puedes definir tu nueva contraseña.", "success")
         return redirect(url_for('auth.pw_reset')) # NOTE: 307 para que mantenga el método POST
     else:
