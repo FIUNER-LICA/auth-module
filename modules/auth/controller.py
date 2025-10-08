@@ -15,12 +15,29 @@ def register_user(email, password):
     send_email(email, "Confirma tu cuenta", f"Por favor confirma tu correo haciendo clic aquí: {verify_url}")
     return True
 
+def reset_password_on_user(email, password):
+    if email not in users_db:
+        raise ValueError("Usuario no existe")
+    pwd_hash = hash_password(password)
+    users_db[email] = {'password': pwd_hash, 'verified': True} # TODO: Verificar si 'verfied' debe cambiarse a False
+    return True
+
 def verify_user(token):
     email = confirm_token(token)
     if not email or email not in users_db:
         return False
     users_db[email]['verified'] = True
     return True
+
+def verify_user_pw_reset(token):
+    """
+    Verifica si el token de recuperación es válido y no ha expirado. 
+    Devuelve el email si es válido, None si no lo es.
+    """
+    email = confirm_token(token)
+    if not email or email not in users_db:
+        return None
+    return email
 
 def authenticate_user(email, password):
     user = users_db.get(email)
@@ -51,7 +68,7 @@ def send_password_recovery_email(email):
         recovery_url = f"http://localhost:5000/reset_password/{token}"
         send_email(email, "Recuperación de contraseña", f"Para restablecer tu contraseña, haz clic aquí: {recovery_url}")
         return True
-    
+
 def is_a_valid_password(password: str, repassword:str) -> tuple[bool,str]:
     """
     Verifica si la contraseña cumple con la regla y si son contraseñas son iguales .
@@ -59,7 +76,7 @@ def is_a_valid_password(password: str, repassword:str) -> tuple[bool,str]:
     message = "La contraseña es válida."
     result = True
     if not is_password_strong(password):
-        message = "La contraseña debe tener al menos 8 caracteres."
+        message = "La contraseña debe tener al menos 8 caracteres." # TODO: Este mensaje debe coincidir con lo que realmente verifica la función is_password_strong
         result = False
     elif not is_password_valid(password, repassword):
         message = "Las contraseñas no coinciden."
