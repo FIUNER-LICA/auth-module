@@ -15,8 +15,11 @@ Las dependencias generales de este proyecto que están en ```deps/requirements.t
    # Cambiar a la rama core-only
    git checkout core-only
 
+   # Limpiar rama core-only para copiar contenido de modules
+   git rm -rf .
+
    # Traer desde main solo la carpeta modules, reemplazando contenido previo
-   git checkout main -- modules/
+   git checkout main -- modules/ && mv modules/* ./ && rmdir modules
 ```
 3. Hacer commit y push
 ```bash
@@ -59,8 +62,6 @@ Debes colocar el contenido de modules de este proyecto en la carperta modules de
 ```bash
    git subtree pull --prefix=modules/auth auth_repo core-only --squash
 ```
-
-
 
 ## 🔎Pruebas y Verificación
 
