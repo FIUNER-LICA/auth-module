@@ -17,10 +17,10 @@ Las dependencias generales de este proyecto que están en ```deps/requirements.t
    # Cambiar a la rama core-only
    git checkout core-only
 
-   # Limpiar rama core-only para copiar contenido de modules
+   # Limpiar rama core-only para copiar contenido de modules de la rama main
    git rm -rf .
 
-   # Traer desde main solo la carpeta modules, reemplazando contenido previo
+   # Traer desde main el contenido de la carpeta modules, reemplazando contenido previo
    git checkout main -- modules/ && mv modules/* ./ && rmdir modules
 ```
 3. Hacer commit y push
