@@ -4,6 +4,7 @@ from modules.auth.email_verification import generate_confirmation_token, confirm
 
 # Simulación base de datos simple
 users_db = {}
+used_pw_reset_tokens = set()
 
 def register_user(email, password):
     if email in users_db:
@@ -19,7 +20,7 @@ def reset_password_on_user(email, password):
     if email not in users_db:
         raise ValueError("Usuario no existe")
     pwd_hash = hash_password(password)
-    users_db[email] = {'password': pwd_hash, 'verified': True} # TODO: Verificar si 'verfied' debe cambiarse a False
+    users_db[email] = {'password': pwd_hash, 'verified': False} # NOTE: se pone verified a False para forzar nueva verificación (de otra forma, se puede crear una cuenta con un correo y saltearse la verificación mediante un inmediato restablecimiento de contraseña)
     return True
 
 def verify_user(token):
@@ -35,6 +36,20 @@ def verify_user_pw_reset(token):
     Devuelve el email si es válido, None si no lo es.
     """
     email = confirm_token(token)
+
+    # --------------------------------------------------------------------
+    # Prevenir reutilización de tokens para restablecimiento de contraseña
+    # --------------------------------------------------------------------
+    # Token ya utilizado e email válido (implica: token reutilizado)
+    if token in used_pw_reset_tokens and email in users_db: 
+        return None
+    used_pw_reset_tokens.add(token)
+    
+    # Token ya utilizado pero email no válido (implica: token expirado, no debería estar más en used_pw_reset_tokens)
+    if token in used_pw_reset_tokens and email is None: 
+        used_pw_reset_tokens.remove(token)
+    
+    # Email no válido o no existe en la "base de datos"
     if not email or email not in users_db:
         return None
     return email
