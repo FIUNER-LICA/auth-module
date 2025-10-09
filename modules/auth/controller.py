@@ -20,7 +20,7 @@ def reset_password_on_user(email, password):
     if email not in users_db:
         raise ValueError("Usuario no existe")
     pwd_hash = hash_password(password)
-    users_db[email] = {'password': pwd_hash, 'verified': False} # NOTE: se pone verified a False para forzar nueva verificación (de otra forma, se puede crear una cuenta con un correo y saltearse la verificación mediante un inmediato restablecimiento de contraseña)
+    users_db[email]['password'] = pwd_hash # NOTE: se mantiene el estado de verificación
     return True
 
 def verify_user(token):
