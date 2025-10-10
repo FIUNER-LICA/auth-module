@@ -2,16 +2,21 @@ from flask import Blueprint, request, session, redirect, url_for, render_templat
 from modules.auth.controller import register_user, authenticate_user, verify_user
 from modules.auth.controller import send_password_recovery_email, is_a_valid_password
 from modules.auth.controller import reset_password_on_user, verify_user_pw_reset
+from modules.auth.decorators import login_required
 from modules.auth.oauth import google, github
 
 
 auth_bp = Blueprint('auth', __name__)
 
+_LOGIN_REDIRECT_ENDPOINT = 'auth.auth_dashboard'  # Valor por defecto
+
+def set_login_redirect(endpoint):
+    global _LOGIN_REDIRECT_ENDPOINT
+    _LOGIN_REDIRECT_ENDPOINT = endpoint
 
 @auth_bp.route('/inicio')
 def inicio():
     return redirect(url_for('index'))
-
 
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
@@ -31,7 +36,6 @@ def register():
             except ValueError as e:
                 flash(str(e), "danger")
     return render_template('register.html')
-
 
 @auth_bp.route('/pwrecovery', methods=['GET', 'POST'])
 def pw_recovery():
@@ -95,7 +99,6 @@ def verify(token):
         flash("El enlace es inválido o expiró.", "danger")
         return redirect(url_for('auth.register'))
 
-
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -105,13 +108,12 @@ def login():
             if authenticate_user(email, password):
                 session['email'] = email
                 flash("Inicio de sesión exitoso.", "success")
-                return redirect(url_for('auth.dashboard'))
+                return redirect(url_for(_LOGIN_REDIRECT_ENDPOINT))  # Usa la variable global
             else:
                 flash("Correo o contraseña incorrectos.", "danger")
         except ValueError as e:
             flash(str(e), "warning")
     return render_template('login.html')
-
 
 @auth_bp.route('/logout')
 def logout():
@@ -119,14 +121,10 @@ def logout():
     flash("Has cerrado sesión.", "info")
     return redirect(url_for('auth.login'))
 
-
-@auth_bp.route('/dashboard')
-def dashboard():
-    if 'email' not in session:
-        flash("Debes iniciar sesión para acceder.", "warning")
-        return redirect(url_for('auth.login'))
-    return render_template('dashboard.html', email=session['email'])
-
+@auth_bp.route('/auth-dashboard')
+@login_required
+def auth_dashboard():
+    return render_template('auth_dashboard.html')
 
 @auth_bp.route("/google")
 def google_login():
