@@ -4,6 +4,7 @@ from modules.auth.email_verification import generate_confirmation_token, confirm
 
 # Simulación base de datos simple
 users_db = {}
+users_db["javier.diaz@uner.edu.ar"]={'password': hash_password("123"), 'verified': True}
 used_pw_reset_tokens = set()
 
 def register_user(email, password):
