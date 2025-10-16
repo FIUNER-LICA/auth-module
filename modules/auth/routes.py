@@ -1,8 +1,18 @@
 from flask import Blueprint, request, session, redirect, url_for, render_template, flash
-from modules.auth.controller import register_user, authenticate_user, verify_user,send_password_recovery_email,is_a_valid_password
+from modules.auth.controller import register_user, authenticate_user, verify_user
+from modules.auth.controller import send_password_recovery_email, is_a_valid_password
+from modules.auth.controller import reset_password_on_user, verify_user_pw_reset
+from modules.auth.decorators import login_required
 from modules.auth.oauth import google, github
+
+
 auth_bp = Blueprint('auth', __name__)
 
+_LOGIN_REDIRECT_ENDPOINT = 'auth.auth_dashboard'  # Valor por defecto
+
+def set_login_redirect(endpoint):
+    global _LOGIN_REDIRECT_ENDPOINT
+    _LOGIN_REDIRECT_ENDPOINT = endpoint
 
 @auth_bp.route('/inicio')
 def inicio():
@@ -14,13 +24,13 @@ def register():
         email = request.form['email']
         password = request.form['password']
         repassword = request.form['repassword']
-        is_valid,message = is_a_valid_password(password, repassword)
+        is_valid, message = is_a_valid_password(password, repassword)
         if not is_valid:
             flash(message, "danger")
             return redirect(url_for('auth.register'))
         else:
             try:
-                register_user(email, password)
+                register_user(email, password) # TODO: register_user retorna un valor?
                 flash("Revisa tu correo para verificar tu cuenta.", "success")
                 return redirect(url_for('auth.login'))
             except ValueError as e:
@@ -35,11 +45,50 @@ def pw_recovery():
             send_password_recovery_email(email)
             # Aquí deberías implementar la lógica para enviar un correo de recuperación
             flash("Si el correo existe, se ha enviado un enlace de recuperación.", "info")
-            return redirect(url_for('auth.login'))
+            return render_template('pwrecovery.html')
         except ValueError as e:
             flash(str(e), "danger")
+            return redirect(url_for('auth.login'))
     else:
         return render_template('pwrecovery.html')
+
+@auth_bp.route('/pwreset', methods=['GET', 'POST'])
+def pw_reset():
+    if request.method == 'POST':
+        if 0 < session['pw_reset_number_access_to_pw_reset']:  # Por si se trata de reentrar a este endpoint para hackear cambio de contraseña
+            flash("Restablecimiento de contraseña expirado.", "danger")
+            return redirect(url_for('auth.login'))
+        session['pw_reset_number_access_to_pw_reset'] += 1 # Permitido un solo acceso a este endpoint desde el inicio del proceso de recuperación
+        email = session['pw_reset_email']
+        password = request.form['password']
+        repassword = request.form['repassword']
+        is_valid, message = is_a_valid_password(password, repassword)
+        if not is_valid:
+            flash(message, "danger")
+            return redirect(url_for('auth.login'))    
+        else:
+            try:
+                reset_password_on_user(email, password)
+                flash("Contraseña actualizada correctamente.", "success")
+                return redirect(url_for('auth.login'))
+            except ValueError as e:
+                flash(str(e), "danger")
+        return render_template('login.html')
+    else:
+        return render_template('pwreset.html')
+
+@auth_bp.route('/reset_password/<token>')
+def pw_reset_token(token):
+    email = verify_user_pw_reset(token)
+    if email is not None:
+        session['pw_reset_email'] = email
+        session['pw_reset_number_access_to_pw_reset'] = 0
+        flash("Correo verificado, ya puedes definir tu nueva contraseña.", "success")
+        return redirect(url_for('auth.pw_reset')) # NOTE: 307 para que mantenga el método POST
+    else:
+        flash("El enlace es inválido o expiró.", "danger")
+        return redirect(url_for('auth.login'))
+
 
 @auth_bp.route('/verify/<token>')
 def verify(token):
@@ -59,7 +108,7 @@ def login():
             if authenticate_user(email, password):
                 session['email'] = email
                 flash("Inicio de sesión exitoso.", "success")
-                return redirect(url_for('auth.dashboard'))
+                return redirect(url_for(_LOGIN_REDIRECT_ENDPOINT))  # Usa la variable global
             else:
                 flash("Correo o contraseña incorrectos.", "danger")
         except ValueError as e:
@@ -72,12 +121,10 @@ def logout():
     flash("Has cerrado sesión.", "info")
     return redirect(url_for('auth.login'))
 
-@auth_bp.route('/dashboard')
-def dashboard():
-    if 'email' not in session:
-        flash("Debes iniciar sesión para acceder.", "warning")
-        return redirect(url_for('auth.login'))
-    return render_template('dashboard.html', email=session['email'])
+@auth_bp.route('/auth-dashboard')
+@login_required
+def auth_dashboard():
+    return render_template('auth_dashboard.html')
 
 @auth_bp.route("/google")
 def google_login():
@@ -103,3 +150,7 @@ def github_login():
     #     email = emails_resp.json()[0]["email"]
     # create_or_get_user_oauth(email=email, name=user_info.get("login"))
     return redirect(url_for("auth.login"))
+
+
+if __name__ == '__main__':
+    print(url_for("login"))

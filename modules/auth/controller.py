@@ -4,6 +4,11 @@ from modules.auth.email_verification import generate_confirmation_token, confirm
 
 # Simulación base de datos simple
 users_db = {}
+<<<<<<< HEAD
+=======
+users_db["javier.diaz@uner.edu.ar"]={'password': hash_password("123"), 'verified': True}
+used_pw_reset_tokens = set()
+>>>>>>> f54bc32d4272f4008d717309ff5eee5cb56d7dfd
 
 def register_user(email, password):
     if email in users_db:
@@ -15,6 +20,16 @@ def register_user(email, password):
     send_email(email, "Confirma tu cuenta", f"Por favor confirma tu correo haciendo clic aquí: {verify_url}")
     return True
 
+<<<<<<< HEAD
+=======
+def reset_password_on_user(email, password):
+    if email not in users_db:
+        raise ValueError("Usuario no existe")
+    pwd_hash = hash_password(password)
+    users_db[email]['password'] = pwd_hash # NOTE: se mantiene el estado de verificación
+    return True
+
+>>>>>>> f54bc32d4272f4008d717309ff5eee5cb56d7dfd
 def verify_user(token):
     email = confirm_token(token)
     if not email or email not in users_db:
@@ -22,6 +37,33 @@ def verify_user(token):
     users_db[email]['verified'] = True
     return True
 
+<<<<<<< HEAD
+=======
+def verify_user_pw_reset(token):
+    """
+    Verifica si el token de recuperación es válido y no ha expirado. 
+    Devuelve el email si es válido, None si no lo es.
+    """
+    email = confirm_token(token)
+
+    # --------------------------------------------------------------------
+    # Prevenir reutilización de tokens para restablecimiento de contraseña
+    # --------------------------------------------------------------------
+    # Token ya utilizado e email válido (implica: token reutilizado)
+    if token in used_pw_reset_tokens and email in users_db: 
+        return None
+    used_pw_reset_tokens.add(token)
+    
+    # Token ya utilizado pero email no válido (implica: token expirado, no debería estar más en used_pw_reset_tokens)
+    if token in used_pw_reset_tokens and email is None: 
+        used_pw_reset_tokens.remove(token)
+    
+    # Email no válido o no existe en la "base de datos"
+    if not email or email not in users_db:
+        return None
+    return email
+
+>>>>>>> f54bc32d4272f4008d717309ff5eee5cb56d7dfd
 def authenticate_user(email, password):
     user = users_db.get(email)
     if not user:
@@ -51,7 +93,11 @@ def send_password_recovery_email(email):
         recovery_url = f"http://localhost:5000/reset_password/{token}"
         send_email(email, "Recuperación de contraseña", f"Para restablecer tu contraseña, haz clic aquí: {recovery_url}")
         return True
+<<<<<<< HEAD
     
+=======
+
+>>>>>>> f54bc32d4272f4008d717309ff5eee5cb56d7dfd
 def is_a_valid_password(password: str, repassword:str) -> tuple[bool,str]:
     """
     Verifica si la contraseña cumple con la regla y si son contraseñas son iguales .
@@ -59,7 +105,11 @@ def is_a_valid_password(password: str, repassword:str) -> tuple[bool,str]:
     message = "La contraseña es válida."
     result = True
     if not is_password_strong(password):
+<<<<<<< HEAD
         message = "La contraseña debe tener al menos 8 caracteres."
+=======
+        message = "La contraseña debe tener al menos 8 caracteres." # TODO: Este mensaje debe coincidir con lo que realmente verifica la función is_password_strong
+>>>>>>> f54bc32d4272f4008d717309ff5eee5cb56d7dfd
         result = False
     elif not is_password_valid(password, repassword):
         message = "Las contraseñas no coinciden."
