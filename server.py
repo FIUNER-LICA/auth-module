@@ -14,6 +14,7 @@ def create_app():
     # Carga de configuraciones generales. Ver config.py
     app.config.from_object(AppConfig)
     
+    # cuando se autentica, esta función fija a dónde direccionar
     set_login_redirect('dashboard')
 
     app.register_blueprint(auth_bp)
