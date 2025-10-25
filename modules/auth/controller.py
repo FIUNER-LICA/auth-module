@@ -13,7 +13,7 @@ def register_user(email, password):
     pwd_hash = hash_password(password)
     users_db[email] = {'password': pwd_hash, 'verified': False}
     token = generate_confirmation_token(email)
-    verify_url = f"http://localhost:5000/verify/{token}"
+    verify_url = f"http://localhost:5000/verify/{token}" # TODO: modificar url base (host+port), para que funcione de manera genérica
     send_email(email, "Confirma tu cuenta", f"Por favor confirma tu correo haciendo clic aquí: {verify_url}")
     return True
 
@@ -81,7 +81,7 @@ def send_password_recovery_email(email):
         raise ValueError("No existe usuario con ese correo")
     else:
         token = generate_confirmation_token(email)
-        recovery_url = f"http://localhost:5000/reset_password/{token}"
+        recovery_url = f"http://localhost:5000/reset_password/{token}" # TODO: modificar url base (host+port), para que sea general
         send_email(email, "Recuperación de contraseña", f"Para restablecer tu contraseña, haz clic aquí: {recovery_url}")
         return True
 def is_a_valid_password(password: str, repassword:str) -> tuple[bool,str]:
