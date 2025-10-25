@@ -1,8 +1,8 @@
-from flask import Flask
-
-app = Flask("server")
 import os
 from dotenv import load_dotenv
+# from modules.auth.mail_lica import MailLICA
+
+# mail_server = MailLICA()
 
 load_dotenv()  # Carga las variables de entorno desde el archivo .env
 
