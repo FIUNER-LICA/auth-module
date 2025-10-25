@@ -3,7 +3,7 @@ from flask_session import Session
 from modules.auth.routes import auth_bp, set_login_redirect
 from modules.auth.session_manager import init_session
 from modules.auth.extensions import mail
-from modules.auth.config import EmailConfig, AppConfig, BaseUrlConfig
+from modules.auth.config import EmailConfig, AppConfig
 # from modules.auth.config import mail_server
 from modules.auth.decorators import login_required
 
