@@ -1,6 +1,5 @@
 from itsdangerous import URLSafeTimedSerializer
 from flask import current_app
-from modules.auth.config import EmailConfig
 from modules.auth.extensions import mail
 
 def generate_confirmation_token(email: str) -> str:
