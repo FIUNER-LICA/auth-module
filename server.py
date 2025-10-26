@@ -3,12 +3,14 @@ from flask_session import Session
 from modules.auth.routes import auth_bp, set_login_redirect
 from modules.auth.session_manager import init_session
 from modules.auth.extensions import mail
-from modules.auth.config import EmailConfig, AppConfig
-# from modules.auth.config import mail_server
+from modules.app_config import AppConfig
+from modules.auth.email_config import EmailConfig
+#  from modules.auth.config import mail_server
 from modules.auth.decorators import login_required
 
 # Carga de configuración de Mail. Ver config.py
-mail.init_mail(EmailConfig)
+e=EmailConfig()
+mail.init_mail(e)
 
 
 def create_app():
