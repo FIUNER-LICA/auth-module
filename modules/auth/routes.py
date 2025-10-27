@@ -44,7 +44,7 @@ def pw_recovery():
     if request.method == 'POST':
         email = request.form['email']
         try:
-            send_password_recovery_email(email)
+            send_password_recovery_email(email) # TODO: acelerar este paso (llamada asíncrona? ¿otro hilo? ¿otra alternativa?)
             # Aquí deberías implementar la lógica para enviar un correo de recuperación
             flash("Si el correo existe, se ha enviado un enlace de recuperación.", "info")
             return render_template('pwrecovery.html')
