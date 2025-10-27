@@ -1,4 +1,4 @@
-from modules.auth.config import EmailConfig
+from modules.auth.email_config import EmailConfig
 from sender import Mail, Message
 from sender import Attachment
 
