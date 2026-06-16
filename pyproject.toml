@@ -1,0 +1,13 @@
+[build-system]
+requires = ["hatchling >= 1.26"]
+build-backend = "hatchling.build"
+
+[project]
+name = "autentication_module"
+version = "0.1.0"
+description = "Modulo estandarizado de autenticacion"
+readme = "README.md"
+requires-python = ">=3.13"
+
+[tool.hatch.build.targets.wheel]
+packages = ["modules", "modules.auth"]
