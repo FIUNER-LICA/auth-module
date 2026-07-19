@@ -56,8 +56,8 @@ def register():
     return render_template('register.html')
 
 
-@auth_bp.route('/pwrecovery', methods=['GET', 'POST'])
-def pw_recovery():
+@auth_bp.route('/password_recovery', methods=['GET', 'POST'])
+def password_recovery():
     """Handles password recovery requests."""
     if request.method == 'POST':
         email = request.form.get('email')
@@ -70,13 +70,13 @@ def pw_recovery():
             flash(str(e), 'danger')
             return redirect(url_for('auth.login'))
 
-        return render_template('pwrecovery.html')
+        return render_template('password_recovery.html')
 
-    return render_template('pwrecovery.html')
+    return render_template('password_recovery.html')
 
 
-@auth_bp.route('/pwreset', methods=['GET', 'POST'])
-def pw_reset():
+@auth_bp.route('/password_reset', methods=['GET', 'POST'])
+def password_reset():
     """Handles the password reset process after clicking a recovery link."""
     if request.method == 'POST':
         if session.get('pw_reset_number_access_to_pw_reset', 0) > 0:
@@ -99,7 +99,7 @@ def pw_reset():
 
         return render_template('login.html')
 
-    return render_template('pwreset.html')
+    return render_template('password_reset.html')
 
 
 @auth_bp.route('/reset_password/<token>')
@@ -112,7 +112,7 @@ def pw_reset_token(token):
         session['pw_reset_email'] = email
         session['pw_reset_number_access_to_pw_reset'] = 0
         flash('Email verified. You can now set your new password.', 'success')
-        return redirect(url_for('auth.pw_reset'))
+        return redirect(url_for('auth.password_reset'))
 
     flash('The link is invalid or has expired.', 'danger')
     return redirect(url_for('auth.login'))
