@@ -4,7 +4,8 @@ Authentication manager that encapsulates user registration, login, and recovery 
 
 from .db.repository import UserRepository
 from .mail.base import MailBase
-from .security.password import PasswordPolicy, hash_password, verify_password
+from .security.hasher import PasswordHasher, WerkzeugPasswordHasher
+from .security.password import PasswordPolicy
 from .tokens import TokenManager
 
 
@@ -19,7 +20,8 @@ class AuthManager:
         mail_dispatcher: MailBase,
         user_repository: UserRepository,
         base_url: str,
-        password_policy: PasswordPolicy | None = None
+        password_policy: PasswordPolicy | None = None,
+        password_hasher: PasswordHasher | None = None
     ):
         """
         Initializes the AuthManager.
@@ -30,6 +32,7 @@ class AuthManager:
             user_repository (UserRepository): The user database repository.
             base_url (str): The base URL of the application for email links.
             password_policy (PasswordPolicy | None): Custom password requirements.
+            password_hasher (PasswordHasher | None): Custom password hashing mechanism. Defaults to Werkzeug.
         """
         if not base_url:
             raise ValueError('A base_url must be provided for generating absolute links.')
@@ -39,6 +42,7 @@ class AuthManager:
         self.user_repository = user_repository
         self.base_url = base_url.rstrip('/')
         self.password_policy = password_policy or PasswordPolicy()
+        self.password_hasher = password_hasher or WerkzeugPasswordHasher()
 
         # Simulating state for used tokens (could also be moved to the DB)
         self.used_pw_reset_tokens = set()
@@ -64,7 +68,7 @@ class AuthManager:
         if not is_valid_pwd:
             raise ValueError(pwd_msg)
 
-        pwd_hash = hash_password(password)
+        pwd_hash = self.password_hasher.hash(password)
         self.user_repository.create_user(email=email, password_hash=pwd_hash, verified=False)
 
         token = self.token_manager.generate_token(email)
@@ -98,7 +102,7 @@ class AuthManager:
         if not is_valid_pwd:
             raise ValueError(pwd_msg)
 
-        pwd_hash = hash_password(password)
+        pwd_hash = self.password_hasher.hash(password)
         self.user_repository.update_user_password(email, pwd_hash)
         return True
 
@@ -171,7 +175,7 @@ class AuthManager:
         if not user.get('verified'):
             raise ValueError('Email is not verified')
 
-        if user.get('password') and verify_password(password, user['password']):
+        if user.get('password') and self.password_hasher.verify(password, user['password']):
             return True
 
         return False

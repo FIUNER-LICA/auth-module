@@ -4,8 +4,6 @@ Password hashing, validation, and policy enforcement utilities.
 
 import re
 
-from werkzeug.security import generate_password_hash, check_password_hash
-
 
 class PasswordPolicy:
     """
@@ -55,28 +53,3 @@ def is_password_valid(password: str, repassword: str) -> bool:
         bool: True if they match, False otherwise.
     """
     return password == repassword
-
-def hash_password(password: str) -> str:
-    """
-    Hashes a password using a secure algorithm.
-
-    Args:
-        password (str): The plain text password.
-
-    Returns:
-        str: The hashed password.
-    """
-    return generate_password_hash(password)
-
-def verify_password(password: str, hashed: str) -> bool:
-    """
-    Verifies a plain text password against a hashed one.
-
-    Args:
-        password (str): The plain text password.
-        hashed (str): The previously hashed password.
-
-    Returns:
-        bool: True if they match, False otherwise.
-    """
-    return check_password_hash(hashed, password)
