@@ -75,7 +75,7 @@ mail = ConsoleMailDispatcher()
 auth_manager = AuthManager(
     mail_dispatcher=mail,
     user_repository=repo,
-    base_url='http://localhost',
+    base_url='http://localhost:5000',
     secret_key='my_secret'
 )
 
@@ -97,14 +97,47 @@ app.config['SESSION_TYPE'] = 'filesystem'
 
 # Configure the Manager and pass it to the Extension
 manager = AuthManager(
-    mail_dispatcher=mail, 
-    user_repository=repo, 
-    base_url='http://localhost:5000', 
+    mail_dispatcher=mail,
+    user_repository=repo,
+    base_url='http://localhost:5000',
     secret_key=app.config['SECRET_KEY']
 )
 AuthExtension(app, manager)
 
 # The /auth blueprint is now registered and ready to use.
+```
+
+### Custom Security Configuration
+The module allows you to easily adapt password rules and their error messages using nested configuration classes.
+
+```python
+from auth_module.core.security.password import PasswordPolicy, PasswordPolicyConfig, LengthRule, RegexRule
+from auth_module.core.auth_manager import AuthManager
+
+# 1. Define rules and custom messages
+config = PasswordPolicyConfig(
+    length=LengthRule(
+        value=12,
+        message='Password must be at least {value} characters long.'
+    ),
+    regex=RegexRule(
+        pattern=r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$',
+        message='Must include uppercase, lowercase, and numbers.'
+    ),
+    msg_valid='Password accepted.'
+)
+
+# 2. Instantiate the policy
+my_policy = PasswordPolicy(config)
+
+# 3. Inject the policy into the AuthManager
+manager = AuthManager(
+    mail_dispatcher=mail,
+    user_repository=repo,
+    base_url='http://localhost:5000',
+    secret_key='secret',
+    password_policy=my_policy
+)
 ```
 
 ---

@@ -2,24 +2,44 @@
 Password hashing, validation, and policy enforcement utilities.
 """
 
+from dataclasses import dataclass, field
 import re
 
 
-class PasswordPolicy:
-    """
-    Configuration for password strength requirements.
-    """
+@dataclass
+class LengthRule:
+    """Configuration for minimum password length."""
+    value: int = 8
+    message: str = 'Password must be at least {value} characters long.'
 
-    def __init__(self, min_length: int = 8, regex_pattern: str | None = None):
+@dataclass
+class RegexRule:
+    """Configuration for password regex constraints."""
+    pattern: str | None = None
+    message: str = 'Password does not meet the complexity requirements.'
+
+@dataclass
+class PasswordPolicyConfig:
+    """
+    Configuration data structure for password strength requirements.
+    Rules and their error messages are grouped together.
+    """
+    length: LengthRule = field(default_factory=LengthRule)
+    regex: RegexRule = field(default_factory=RegexRule)
+    msg_valid: str = 'Password is valid.'
+
+
+class PasswordPolicy:
+    """Configuration for password strength requirements using a customizable config."""
+
+    def __init__(self, config: PasswordPolicyConfig | None = None):
         """
-        Initializes the password policy.
+        Initializes the password policy with the given configuration.
 
         Args:
-            min_length (int): Minimum required length for the password. Defaults to 8.
-            regex_pattern (str | None): Optional regex pattern the password must match.
+            config (PasswordPolicyConfig | None): Configuration and customized messages.
         """
-        self.min_length = min_length
-        self.regex_pattern = regex_pattern
+        self.config = config or PasswordPolicyConfig()
 
     def validate(self, password: str) -> tuple[bool, str]:
         """
@@ -31,14 +51,14 @@ class PasswordPolicy:
         Returns:
             tuple[bool, str]: A boolean indicating success, and an error message if failed.
         """
-        if len(password) < self.min_length:
-            return False, f'Password must be at least {self.min_length} characters long.'
+        if len(password) < self.config.length.value:
+            return False, self.config.length.message.format(value=self.config.length.value)
 
-        if self.regex_pattern:
-            if not re.match(self.regex_pattern, password):
-                return False, 'Password does not meet the complexity requirements.'
+        if self.config.regex.pattern:
+            if not re.match(self.config.regex.pattern, password):
+                return False, self.config.regex.message
 
-        return True, 'Password is valid.'
+        return True, self.config.msg_valid
 
 
 def is_password_valid(password: str, repassword: str) -> bool:

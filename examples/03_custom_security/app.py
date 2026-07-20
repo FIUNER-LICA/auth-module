@@ -12,7 +12,7 @@ from flask import Flask
 from auth_module.core.auth_manager import AuthManager
 from auth_module.core.db.sqlite_repository import SQLiteUserRepository
 from auth_module.core.mail.console_dispatcher import ConsoleMailDispatcher
-from auth_module.core.security.password import PasswordPolicy
+from auth_module.core.security.password import PasswordPolicy, PasswordPolicyConfig, LengthRule, RegexRule
 
 from auth_module.flask_ext.extension import AuthExtension
 
@@ -36,10 +36,18 @@ def create_app() -> Flask:
     # Create a custom password policy
     # Example: Require exactly 12 characters minimum, and force specific patterns
     # The regex below requires at least one uppercase, one lowercase, one number, and one special character
-    strict_policy = PasswordPolicy(
-        min_length=12,
-        regex_pattern=r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$'
+    config = PasswordPolicyConfig(
+        length=LengthRule(
+            value=12,
+            message='La contraseña debe tener al menos {value} caracteres.'
+        ),
+        regex=RegexRule(
+            pattern=r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$',
+            message='La contraseña debe incluir mayúsculas, minúsculas, números y símbolos.'
+        ),
+        msg_valid='Contraseña aceptada.'
     )
+    strict_policy = PasswordPolicy(config)
 
     # Initialize AuthManager with the custom policy
     auth_manager = AuthManager(

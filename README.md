@@ -38,7 +38,7 @@ libs/auth-module/
 ```
 
 ### 3. Instalar con pip
-Activa el entorno virtual de tu proyecto principal e instala el módulo. 
+Activa el entorno virtual de tu proyecto principal e instala el módulo.
 
 Instalación Básica (Solo Core, sin Flask):
 ```bash
@@ -75,7 +75,7 @@ mail = ConsoleMailDispatcher()
 auth_manager = AuthManager(
     mail_dispatcher=mail,
     user_repository=repo,
-    base_url='http://localhost',
+    base_url='http://localhost:5000',
     secret_key='mi_secreto'
 )
 
@@ -97,14 +97,47 @@ app.config['SESSION_TYPE'] = 'filesystem'
 
 # Configurar el Manager y pasarlo a la Extensión
 manager = AuthManager(
-    mail_dispatcher=mail, 
-    user_repository=repo, 
-    base_url='http://localhost:5000', 
+    mail_dispatcher=mail,
+    user_repository=repo,
+    base_url='http://localhost:5000',
     secret_key=app.config['SECRET_KEY']
 )
 AuthExtension(app, manager)
 
 # El blueprint de /auth ya está registrado y listo para usarse.
+```
+
+### Configuración de Seguridad Personalizada
+El módulo permite adaptar las reglas de contraseñas y sus mensajes de error fácilmente mediante clases de configuración anidadas.
+
+```python
+from auth_module.core.security.password import PasswordPolicy, PasswordPolicyConfig, LengthRule, RegexRule
+from auth_module.core.auth_manager import AuthManager
+
+# 1. Definir las reglas y sus mensajes personalizados
+config = PasswordPolicyConfig(
+    length=LengthRule(
+        value=12,
+        message='La contraseña debe tener al menos {value} caracteres.'
+    ),
+    regex=RegexRule(
+        pattern=r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$',
+        message='Debe incluir mayúsculas, minúsculas y números.'
+    ),
+    msg_valid='Contraseña aceptada.'
+)
+
+# 2. Instanciar la política
+mi_politica = PasswordPolicy(config)
+
+# 3. Inyectar la política en el AuthManager
+manager = AuthManager(
+    mail_dispatcher=mail,
+    user_repository=repo,
+    base_url='http://localhost:5000',
+    secret_key='secreto',
+    password_policy=mi_politica
+)
 ```
 
 ---
