@@ -111,23 +111,26 @@ AuthExtension(app, manager)
 El módulo permite adaptar las reglas de contraseñas y sus mensajes de error fácilmente mediante clases de configuración anidadas.
 
 ```python
-from auth_module.core.security.password import PasswordPolicy, PasswordPolicyConfig, LengthRule, RegexRule
+from auth_module.core.security.password import PasswordPolicy, PasswordPolicyConfig
+from auth_module.core.security.rules import LengthRule, RegexRule
 from auth_module.core.auth_manager import AuthManager
 
 # 1. Definir las reglas y sus mensajes personalizados
 config = PasswordPolicyConfig(
-    length=LengthRule(
-        value=12,
-        message='La contraseña debe tener al menos {value} caracteres.'
-    ),
-    regex=RegexRule(
-        pattern=r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$',
-        message='Debe incluir mayúsculas, minúsculas y números.'
-    ),
+    rules=[
+        LengthRule(
+            value=12, 
+            message='La contraseña debe tener al menos {value} caracteres.'
+        ),
+        RegexRule(
+            pattern=r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$',
+            message='Debe incluir mayúsculas, minúsculas y números.'
+        )
+    ],
     msg_valid='Contraseña aceptada.'
 )
 
-# 2. Instanciar la política
+# 2. Instarnciar la política
 mi_politica = PasswordPolicy(config)
 
 # 3. Inyectar la política en el AuthManager

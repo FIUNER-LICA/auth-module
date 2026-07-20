@@ -1,7 +1,8 @@
 """
 Unit tests for password validation and policies.
 """
-from auth_module.core.security.password import PasswordPolicy, PasswordPolicyConfig, LengthRule, RegexRule, is_password_valid
+from auth_module.core.security.password import PasswordPolicy, PasswordPolicyConfig, is_password_valid
+from auth_module.core.security.rules import LengthRule, RegexRule
 
 
 def test_password_policy_default():
@@ -19,7 +20,7 @@ def test_password_policy_default():
 def test_password_policy_custom_length():
     """Test a custom password policy with a minimum length of 12 characters and custom message."""
     config = PasswordPolicyConfig(
-        length=LengthRule(value=12, message='Demasiado corta: {value}')
+        rules=[LengthRule(value=12, message='Demasiado corta: {value}')]
     )
     policy = PasswordPolicy(config)
 
@@ -33,8 +34,10 @@ def test_password_policy_regex():
     """Test a password policy that requires at least one number using a regex pattern."""
     # Require at least one number
     config = PasswordPolicyConfig(
-        length=LengthRule(value=6),
-        regex=RegexRule(pattern=r'^.*[0-9].*$')
+        rules=[
+            LengthRule(value=6),
+            RegexRule(pattern=r'^.*[0-9].*$')
+        ]
     )
     policy = PasswordPolicy(config)
     assert not policy.validate('noumbers')[0]

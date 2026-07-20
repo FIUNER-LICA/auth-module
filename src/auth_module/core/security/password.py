@@ -3,29 +3,17 @@ Password hashing, validation, and policy enforcement utilities.
 """
 
 from dataclasses import dataclass, field
-import re
 
+from .rules import AbsPasswordRule, LengthRule, RegexRule
 
-@dataclass
-class LengthRule:
-    """Configuration for minimum password length."""
-    value: int = 8
-    message: str = 'Password must be at least {value} characters long.'
-
-@dataclass
-class RegexRule:
-    """Configuration for password regex constraints."""
-    pattern: str | None = None
-    message: str = 'Password does not meet the complexity requirements.'
 
 @dataclass
 class PasswordPolicyConfig:
     """
     Configuration data structure for password strength requirements.
-    Rules and their error messages are grouped together.
+    Rules and their error messages are grouped together dynamically.
     """
-    length: LengthRule = field(default_factory=LengthRule)
-    regex: RegexRule = field(default_factory=RegexRule)
+    rules: list[AbsPasswordRule] = field(default_factory=lambda: [LengthRule(), RegexRule()])
     msg_valid: str = 'Password is valid.'
 
 
@@ -51,12 +39,10 @@ class PasswordPolicy:
         Returns:
             tuple[bool, str]: A boolean indicating success, and an error message if failed.
         """
-        if len(password) < self.config.length.value:
-            return False, self.config.length.message.format(value=self.config.length.value)
-
-        if self.config.regex.pattern:
-            if not re.match(self.config.regex.pattern, password):
-                return False, self.config.regex.message
+        for rule in self.config.rules:
+            is_valid, msg = rule.validate(password)
+            if not is_valid:
+                return False, msg
 
         return True, self.config.msg_valid
 
