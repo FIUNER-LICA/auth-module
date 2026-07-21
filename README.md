@@ -49,6 +49,12 @@ Instalación con Flask (Incluye dependencias web y vistas):
 ```bash
 pip install "./libs/auth-module[flask]"
 ```
+
+Instalación de todas las dependencias del paquete (incluyendo herramientas de desarrollo):
+```bash
+pip install "./libs/auth-module[all]"
+```
+
 *(Nota: Usar la bandera `-e` durante el `pip install` es útil si planeas modificar el código del módulo auth-module y ver los cambios reflejados instantáneamente en tu proyecto).*
 
 ---

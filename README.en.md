@@ -49,6 +49,12 @@ Flask Installation (Includes web dependencies and views):
 ```bash
 pip install "./libs/auth-module[flask]"
 ```
+
+All Dependencies Installation (Includes all optional dependencies and development tools):
+```bash
+pip install "./libs/auth-module[all]"
+```
+
 *(Note: Using the `-e` flag during `pip install` is useful if you plan on modifying the auth-module code and want to see the changes reflected instantly in your project).*
 
 ---
