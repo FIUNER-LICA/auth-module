@@ -222,7 +222,7 @@ class AuthManager:
             raise ValueError('No user exists with that email')
 
         token = self.token_manager.generate_token(email)
-        recovery_url = f'{self.base_url}/reset_password/{token}'
+        recovery_url = f'{self.base_url}/reset-password/{token}'
 
         self.mail_dispatcher.send(
             to_email=email,

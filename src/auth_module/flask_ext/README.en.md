@@ -19,8 +19,8 @@ The Blueprint automatically mounts the following endpoints under the `/auth` pre
 - `/auth/login`
 - `/auth/logout`
 - `/auth/verify/<token>`
-- `/auth/request_password_recovery`
-- `/auth/reset_password/<token>`
+- `/auth/password-recovery`
+- `/auth/reset-password/<token>`
 
 ## Access Control (`decorators.py`)
 To protect your own Flask routes, the extension exposes native decorators:

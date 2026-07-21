@@ -56,7 +56,7 @@ def register():
     return render_template('register.html')
 
 
-@auth_bp.route('/password_recovery', methods=['GET', 'POST'])
+@auth_bp.route('/password-recovery', methods=['GET', 'POST'])
 def password_recovery():
     """Handles password recovery requests."""
     if request.method == 'POST':
@@ -75,7 +75,7 @@ def password_recovery():
     return render_template('password_recovery.html')
 
 
-@auth_bp.route('/password_reset', methods=['GET', 'POST'])
+@auth_bp.route('/password-reset', methods=['GET', 'POST'])
 def password_reset():
     """Handles the password reset process after clicking a recovery link."""
     if request.method == 'POST':
@@ -102,7 +102,7 @@ def password_reset():
     return render_template('password_reset.html')
 
 
-@auth_bp.route('/reset_password/<token>')
+@auth_bp.route('/reset-password/<token>')
 def pw_reset_token(token):
     """Verifies a password reset token."""
     auth_manager = get_auth_manager()
