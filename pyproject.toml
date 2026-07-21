@@ -8,9 +8,10 @@ version = "0.1.0"
 description = "A modular authentication package with optional Flask frontend integration."
 readme = "README.md"
 authors = [
+    { name = "Lautaro Caupolicán Ré", email = "caupolican.re@uner.edu.ar" },
     { name = "Javier Diaz Zamboni", email = "javier.diaz@uner.edu.ar" },
     { name = "Jordán Insfrán", email = "jordan.insfran@uner.edu.ar" },
-    { name = "Lautaro Caupolicán Ré", email = "caupolican.re@uner.edu.ar" }
+    { name = "Juan Rizzato", email = "juan.rizzato@uner.edu.ar" }
 ]
 requires-python = ">=3.13"
 dependencies = [
