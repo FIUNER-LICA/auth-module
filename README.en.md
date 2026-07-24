@@ -50,9 +50,9 @@ Flask Installation (Includes web dependencies and views):
 pip install "./libs/auth-module[flask]"
 ```
 
-All Dependencies Installation (Includes all optional dependencies and development tools):
+Complete Installation (Includes optional dependencies like Flask and OAuth):
 ```bash
-pip install "./libs/auth-module[all]"
+pip install "./libs/auth-module[flask,oauth]"
 ```
 
 *(Note: Using the `-e` flag during `pip install` is useful if you plan on modifying the auth-module code and want to see the changes reflected instantly in your project).*
@@ -163,12 +163,20 @@ manager = AuthManager(
 
 ## Testing
 
-The project is fully covered by automated tests under the [tests/](tests) folder. To run them:
+The project is fully covered by automated tests under the [tests/](tests) folder. To run them, you first need to install the development dependencies (defined in the `dev` group of `pyproject.toml` under the [PEP 735](https://peps.python.org/pep-0735/) standard):
 
+If using **uv**:
 ```bash
-# Install development dependencies
-pip install "./libs/auth-module[dev]"
+uv sync --group dev
+```
 
-# Run pytest
+If using **pip** (requires `pip >= 25.1`):
+```bash
+pip install -e ./libs/auth-module --group dev
+```
+*(Note: If you have an older version of pip, you can upgrade it via `pip install --upgrade pip`).*
+
+Then, run pytest:
+```bash
 pytest libs/auth-module/tests/
 ```
