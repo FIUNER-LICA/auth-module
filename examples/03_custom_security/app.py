@@ -39,12 +39,12 @@ def create_app() -> Flask:
     config = PasswordPolicyConfig(
         rules=[
             LengthRule(
-                value=12, 
+                value=12,
                 message='La contraseña debe tener al menos {value} caracteres.'
             ),
             RegexRule(
-                pattern=r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]+$',
-                message='La contraseña debe incluir mayúsculas, minúsculas, números y símbolos.'
+                pattern=r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9\s]).+$',
+                message='La contraseña debe incluir por lo menos 1 mayúscula, 1 minúscula, 1 número y 1 símbolo.'
             )
         ],
         msg_valid='Contraseña aceptada.'
