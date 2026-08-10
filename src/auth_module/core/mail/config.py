@@ -2,8 +2,8 @@
 Email configurations.
 """
 
-from abc import ABC, abstractmethod
 import os
+from abc import ABC, abstractmethod
 
 from dotenv import load_dotenv
 

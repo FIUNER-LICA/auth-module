@@ -2,7 +2,7 @@
 Implementation of the email dispatcher using the 'sender' library.
 """
 
-from sender import Mail, Message, Attachment
+from sender import Attachment, Mail, Message
 
 from .base import MailBase
 from .config import AbsEmailServerConfig

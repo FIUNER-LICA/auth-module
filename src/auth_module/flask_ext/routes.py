@@ -2,10 +2,18 @@
 Flask routes for the authentication module.
 """
 
-from flask import Blueprint, request, session, redirect, url_for, render_template, flash, current_app
+from flask import (
+    Blueprint,
+    current_app,
+    flash,
+    redirect,
+    render_template,
+    request,
+    session,
+    url_for,
+)
 
 from .decorators import login_required
-
 
 # Create a blueprint with template and static folders configured to point to this package's folders
 auth_bp = Blueprint(

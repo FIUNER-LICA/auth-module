@@ -1,4 +1,5 @@
 """Abstract base classes for password rules."""
+
 from abc import ABC, abstractmethod
 
 

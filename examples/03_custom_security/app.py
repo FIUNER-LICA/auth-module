@@ -14,7 +14,6 @@ from auth_module.core.db.sqlite_repository import SQLiteUserRepository
 from auth_module.core.mail.console_dispatcher import ConsoleMailDispatcher
 from auth_module.core.security.password import PasswordPolicy, PasswordPolicyConfig
 from auth_module.core.security.rules import LengthRule, RegexRule
-
 from auth_module.flask_ext.extension import AuthExtension
 
 

@@ -1,5 +1,7 @@
 """Length constraint rule."""
+
 from dataclasses import dataclass
+
 from .base import AbsPasswordRule
 
 
