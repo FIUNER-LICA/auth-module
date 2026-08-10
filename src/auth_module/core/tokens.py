@@ -2,6 +2,9 @@
 Token generation and validation using itsdangerous.
 """
 
+import hashlib
+import hmac
+
 from itsdangerous import URLSafeTimedSerializer
 
 
@@ -10,19 +13,28 @@ class TokenManager:
     Manages the creation and validation of secure, timed tokens.
     """
 
-    def __init__(self, secret_key: str, salt: str = 'email-confirm'):
+    def __init__(self, secret_key: str, salt: str | None = None) -> None:
         """
         Initializes the TokenManager.
 
         Args:
             secret_key (str): The secret key used to sign the tokens.
-            salt (str): The salt used to namespace the tokens.
+            salt (str | None): The salt used to namespace the tokens.
         """
         if not secret_key:
             raise ValueError('A secret_key is required for token generation.')
 
         self.secret_key = secret_key
-        self.salt = salt
+
+        if salt is None:
+            self.salt = hmac.new(
+                secret_key.encode('utf-8'),
+                msg=b'auth_module_secure_salt_derivation',
+                digestmod=hashlib.sha256
+            ).hexdigest()
+        else:
+            self.salt = salt
+
         self.serializer = URLSafeTimedSerializer(self.secret_key)
 
     def generate_token(self, data: str) -> str:
