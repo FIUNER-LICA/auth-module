@@ -4,7 +4,7 @@ Password hashing, validation, and policy enforcement utilities.
 
 from dataclasses import dataclass, field
 
-from .rules import AbsPasswordRule, LengthRule, RegexRule
+from .rules import LengthPasswordRule, PasswordRule, RegexPasswordRule
 
 
 @dataclass
@@ -13,7 +13,7 @@ class PasswordPolicyConfig:
     Configuration data structure for password strength requirements.
     Rules and their error messages are grouped together dynamically.
     """
-    rules: list[AbsPasswordRule] = field(default_factory=lambda: [LengthRule(), RegexRule()])
+    rules: list[PasswordRule] = field(default_factory=lambda: [LengthPasswordRule(), RegexPasswordRule()])
     msg_valid: str = 'Password is valid.'
 
 

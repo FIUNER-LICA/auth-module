@@ -3,11 +3,11 @@
 import re
 from dataclasses import dataclass
 
-from .base import AbsPasswordRule
+from .base import PasswordRule
 
 
 @dataclass
-class RegexRule(AbsPasswordRule):
+class RegexPasswordRule(PasswordRule):
     """Validates that a password matches a regex pattern."""
     pattern: str | None = None
     message: str = 'Password does not meet the complexity requirements.'

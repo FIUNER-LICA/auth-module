@@ -3,7 +3,7 @@
 from abc import ABC, abstractmethod
 
 
-class AbsPasswordRule(ABC):
+class PasswordRule(ABC):
     """Abstract base class for all password validation rules."""
 
     @abstractmethod

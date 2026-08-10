@@ -1,6 +1,7 @@
 """
 Unit tests for password hasher implementations.
 """
+
 from auth_module.core.security.hasher import WerkzeugPasswordHasher
 
 
@@ -11,7 +12,7 @@ def test_werkzeug_password_hasher():
 
     hashed = hasher.hash(password)
     assert hashed != password
-    assert hashed.startswith('scrypt:') or hashed.startswith('pbkdf2:')
+    assert hashed.startswith(('scrypt:', 'pbkdf2:'))
 
     assert hasher.verify(password, hashed)
     assert not hasher.verify('wrongpassword', hashed)

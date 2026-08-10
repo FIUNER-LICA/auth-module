@@ -8,19 +8,19 @@ The system includes by default the `WerkzeugPasswordHasher`, which uses the Werk
 
 ## 2. Password Policies (`password.py` and `rules/`)
 The policy system uses dynamic validation (Chain of Responsibility).
-The `PasswordPolicyConfig` receives a list of **Rules** that inherit from `AbsPasswordRule`.
+The `PasswordPolicyConfig` receives a list of **Rules** that inherit from `PasswordRule`.
 
 Included rules:
-- `LengthRule`: Validates minimum length.
-- `RegexRule`: Validates that the password meets a regular expression.
+- `LengthPasswordRule`: Validates minimum length.
+- `RegexPasswordRule`: Validates that the password meets a regular expression.
 
 ### Creating a Custom Rule
 You can easily extend the system by creating your own rule:
 
 ```python
-from auth_module.core.security.rules import AbsPasswordRule
+from auth_module.core.security.rules import PasswordRule
 
-class NoEmailRule(AbsPasswordRule):
+class NoEmailRule(PasswordRule):
     def validate(self, password: str) -> tuple[bool, str]:
         # Validation logic...
         return False, "Password cannot be the same as your email."

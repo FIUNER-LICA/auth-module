@@ -118,17 +118,17 @@ El módulo permite adaptar las reglas de contraseñas y sus mensajes de error f�
 
 ```python
 from auth_module.core.security.password import PasswordPolicy, PasswordPolicyConfig
-from auth_module.core.security.rules import LengthRule, RegexRule
+from auth_module.core.security.rules import LengthPasswordRule, RegexPasswordRule
 from auth_module.core.auth_manager import AuthManager
 
 # 1. Definir las reglas y sus mensajes personalizados
 config = PasswordPolicyConfig(
     rules=[
-        LengthRule(
+        LengthPasswordRule(
             value=12, 
             message='La contraseña debe tener al menos {value} caracteres.'
         ),
-        RegexRule(
+        RegexPasswordRule(
             pattern=r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$',
             message='Debe incluir mayúsculas, minúsculas y números.'
         )

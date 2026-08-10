@@ -3,7 +3,7 @@
 The mail package handles all outgoing communication with the user (account verification and password recovery).
 
 ## Abstract Interface (`base.py`)
-All mail dispatching classes implement the abstract `MailBase` class, which requires the `send(to_email, subject, body)` method. 
+All mail dispatching classes implement the abstract `MailDispatcher` class, which requires the `send(to_email, subject, body)` method. 
 This allows swapping providers (SendGrid, AWS SES, SMTP, Console) without modifying the `AuthManager` logic.
 
 ## Included Dispatchers

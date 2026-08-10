@@ -2,10 +2,10 @@
 Console email dispatcher for development and testing.
 """
 
-from .base import MailBase
+from .base import MailDispatcher
 
 
-class ConsoleMailDispatcher(MailBase):
+class ConsoleMailDispatcher(MailDispatcher):
     """
     A dummy email dispatcher that prints emails to the console instead of sending them.
     Useful for local development and testing.

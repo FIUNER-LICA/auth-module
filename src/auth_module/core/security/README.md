@@ -8,19 +8,19 @@ El sistema incluye por defecto el `WerkzeugPasswordHasher`, que utiliza la libre
 
 ## 2. Políticas de Contraseña (`password.py` y `rules/`)
 El sistema de políticas utiliza validación dinámica (Chain of Responsibility).
-La configuración `PasswordPolicyConfig` recibe una lista de **Reglas** que heredan de `AbsPasswordRule`.
+La configuración `PasswordPolicyConfig` recibe una lista de **Reglas** que heredan de `PasswordRule`.
 
 Reglas incluidas:
-- `LengthRule`: Valida longitud mínima. Valor por defecto: 8 caracteres.
-- `RegexRule`: Valida que la contraseña cumpla una expresión regular. Valor por defecto: None (no se aplica ninguna validación de expresiones regulares).
+- `LengthPasswordRule`: Valida longitud mínima. Valor por defecto: 8 caracteres.
+- `RegexPasswordRule`: Valida que la contraseña cumpla una expresión regular. Valor por defecto: None (no se aplica ninguna validación de expresiones regulares).
 
 ### Crear una Regla Personalizada
 Puedes extender el sistema fácilmente creando tu propia regla:
 
 ```python
-from auth_module.core.security.rules import AbsPasswordRule
+from auth_module.core.security.rules import PasswordRule
 
-class NoEmailRule(AbsPasswordRule):
+class NoEmailRule(PasswordRule):
     def validate(self, password: str) -> tuple[bool, str]:
         # Lógica de validación...
         return False, "La contraseña no puede ser igual al email."

@@ -2,11 +2,11 @@
 
 from dataclasses import dataclass
 
-from .base import AbsPasswordRule
+from .base import PasswordRule
 
 
 @dataclass
-class LengthRule(AbsPasswordRule):
+class LengthPasswordRule(PasswordRule):
     """Validates that a password meets the minimum length."""
     value: int = 8
     message: str = 'Password must be at least {value} characters long.'

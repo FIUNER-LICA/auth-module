@@ -5,10 +5,10 @@ import pytest
 
 from auth_module.core.auth_manager import AuthManager
 from auth_module.core.db.sqlite_repository import SQLiteUserRepository
-from auth_module.core.mail.base import MailBase
+from auth_module.core.mail.base import MailDispatcher
 
 
-class MockMailDispatcher(MailBase):
+class MockMailDispatcher(MailDispatcher):
     """A mock mail dispatcher for testing purposes."""
 
     def __init__(self):

@@ -13,7 +13,7 @@ from auth_module.core.auth_manager import AuthManager
 from auth_module.core.db.sqlite_repository import SQLiteUserRepository
 from auth_module.core.mail.console_dispatcher import ConsoleMailDispatcher
 from auth_module.core.security.password import PasswordPolicy, PasswordPolicyConfig
-from auth_module.core.security.rules import LengthRule, RegexRule
+from auth_module.core.security.rules import LengthPasswordRule, RegexPasswordRule
 from auth_module.flask_ext.extension import AuthExtension
 
 
@@ -38,11 +38,11 @@ def create_app() -> Flask:
     # The regex below requires at least one uppercase, one lowercase, one number, and one special character
     config = PasswordPolicyConfig(
         rules=[
-            LengthRule(
+            LengthPasswordRule(
                 value=12,
                 message='La contraseña debe tener al menos {value} caracteres.'
             ),
-            RegexRule(
+            RegexPasswordRule(
                 pattern=r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9\s]).+$',
                 message='La contraseña debe incluir por lo menos 1 mayúscula, 1 minúscula, 1 número y 1 símbolo.'
             )

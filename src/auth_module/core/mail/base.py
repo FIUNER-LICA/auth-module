@@ -5,7 +5,7 @@ Abstract base classes for email dispatch.
 from abc import ABC, abstractmethod
 
 
-class MailBase(ABC):
+class MailDispatcher(ABC):
     """Abstract base class for email dispatchers."""
 
     @abstractmethod

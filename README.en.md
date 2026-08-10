@@ -118,17 +118,17 @@ The module allows you to easily adapt password rules and their error messages us
 
 ```python
 from auth_module.core.security.password import PasswordPolicy, PasswordPolicyConfig
-from auth_module.core.security.rules import LengthRule, RegexRule
+from auth_module.core.security.rules import LengthPasswordRule, RegexPasswordRule
 from auth_module.core.auth_manager import AuthManager
 
 # 1. Define rules and custom messages
 config = PasswordPolicyConfig(
     rules=[
-        LengthRule(
+        LengthPasswordRule(
             value=12, 
             message='Password must be at least {value} characters long.'
         ),
-        RegexRule(
+        RegexPasswordRule(
             pattern=r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$',
             message='Must include uppercase, lowercase, and numbers.'
         )

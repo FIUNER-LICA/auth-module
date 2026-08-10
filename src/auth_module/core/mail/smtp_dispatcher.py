@@ -4,11 +4,11 @@ Implementation of the email dispatcher using the 'sender' library.
 
 from sender import Attachment, Mail, Message
 
-from .base import MailBase
+from .base import MailDispatcher
 from .config import AbsEmailServerConfig
 
 
-class SmtpMailDispatcher(MailBase):
+class SmtpMailDispatcher(MailDispatcher):
     """
     Email dispatcher implementation using the 'sender' SMTP library.
     """

@@ -3,7 +3,7 @@ Authentication manager that encapsulates user registration, login, and recovery 
 """
 
 from .db.repository import UserRepository
-from .mail.base import MailBase
+from .mail.base import MailDispatcher
 from .security.hasher import PasswordHasher, WerkzeugPasswordHasher
 from .security.password import PasswordPolicy
 from .tokens import TokenManager
@@ -17,7 +17,7 @@ class AuthManager:
     def __init__(
         self,
         secret_key: str,
-        mail_dispatcher: MailBase,
+        mail_dispatcher: MailDispatcher,
         user_repository: UserRepository,
         base_url: str,
         password_policy: PasswordPolicy | None = None,
@@ -28,7 +28,7 @@ class AuthManager:
 
         Args:
             secret_key (str): Secret key for token generation.
-            mail_dispatcher (MailBase): The email sending service.
+            mail_dispatcher (MailDispatcher): The email sending service.
             user_repository (UserRepository): The user database repository.
             base_url (str): The base URL of the application for email links.
             password_policy (PasswordPolicy | None): Custom password requirements.

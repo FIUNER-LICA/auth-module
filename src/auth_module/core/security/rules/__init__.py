@@ -1,7 +1,7 @@
 """Export all rules."""
 
-from .base import AbsPasswordRule
-from .length import LengthRule
-from .regex import RegexRule
+from .base import PasswordRule
+from .length import LengthPasswordRule
+from .regex import RegexPasswordRule
 
-__all__ = ['AbsPasswordRule', 'LengthRule', 'RegexRule']
+__all__ = ['PasswordRule', 'LengthPasswordRule', 'RegexPasswordRule']
