@@ -43,3 +43,22 @@ dev = [
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.coverage.run]
+branch = true
+source = ["src"]
+omit = [
+    "*/tests/*",
+    "*proofs.py",
+    "*/__init__.py"
+]
+
+[tool.coverage.report]
+show_missing = true
+fail_under = 70
+
+[tool.coverage.xml]
+output = "coverage-last.xml"
+
+[tool.coverage.json]
+output = "coverage-last.json"
