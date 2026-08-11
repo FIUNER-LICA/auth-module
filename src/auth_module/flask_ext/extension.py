@@ -2,11 +2,14 @@
 Flask extension initialization.
 """
 
+from collections.abc import Callable
+
 from flask import Flask
 
 from flask_session import Session
 
 from ..core.auth_manager import AuthManager
+from ..core.i18n import FRONTEND_TRANSLATIONS, I18nManager
 from .routes import auth_bp
 
 
@@ -15,15 +18,25 @@ class AuthExtension:
     Flask extension to integrate the AuthManager and authentication routes.
     """
 
-    def __init__(self, app: Flask | None = None, auth_manager: AuthManager | None = None):
+    def __init__(
+        self,
+        app: Flask | None = None,
+        auth_manager: AuthManager | None = None,
+        locale: str | Callable[[], str] = 'es',
+        custom_translations: dict[str, dict[str, str]] | None = None
+    ):
         """
         Initializes the extension.
 
         Args:
             app (Flask | None): The Flask application instance.
             auth_manager (AuthManager | None): The configured AuthManager instance.
+            locale: Locale code or callback for the frontend/templates. Defaults to Spanish ('es').
+            custom_translations: Custom overrides for frontend translations.
         """
         self.auth_manager = auth_manager
+        self.locale = locale
+        self.custom_translations = custom_translations
         if app is not None:
             self.init_app(app, auth_manager)
 
@@ -45,6 +58,22 @@ class AuthExtension:
         if not hasattr(app, 'extensions'):
             app.extensions = {}
         app.extensions['auth_module'] = self.auth_manager
+
+        # Set up a dedicated frontend translator using frontend-specific keys
+        # Read the locales from Flask config if available, fallback to parameters
+        app_backend = app.config.get('AUTH_BACKEND_LOCALE')
+        if app_backend:
+            self.auth_manager.i18n.set_locale(app_backend)
+
+        app_frontend = app.config.get('AUTH_FRONTEND_LOCALE') or self.locale
+
+        self.i18n = I18nManager(
+            locale=app_frontend,
+            default_translations=FRONTEND_TRANSLATIONS,
+            custom_translations=self.custom_translations
+        )
+
+        app.extensions['auth_frontend_i18n'] = self.i18n
 
         # Initialize Flask-Session if it's not already initialized
         if 'session' not in app.extensions:
