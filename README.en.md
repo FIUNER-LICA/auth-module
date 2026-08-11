@@ -105,7 +105,7 @@ app.config['SESSION_TYPE'] = 'filesystem'
 manager = AuthManager(
     mail_dispatcher=mail,
     user_repository=repo,
-    base_url='http://localhost:5000',
+    base_url='http://localhost:5000/auth',
     secret_key=app.config['SECRET_KEY']
 )
 AuthExtension(app, manager)

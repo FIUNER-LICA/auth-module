@@ -55,7 +55,7 @@ def create_app() -> Flask:
     auth_manager = AuthManager(
         mail_dispatcher=mail_dispatcher,
         user_repository=user_repository,
-        base_url='http://localhost:5000',
+        base_url='http://localhost:5000/auth',
         secret_key=app.config['SECRET_KEY'],
         password_policy=strict_policy
         # You could also pass password_hasher=MyCustomHasher() here
