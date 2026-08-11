@@ -3,7 +3,9 @@ Password hashing, validation, and policy enforcement utilities.
 """
 
 from dataclasses import dataclass, field
+from typing import Any
 
+from ..i18n import I18nManager
 from .rules import LengthPasswordRule, PasswordRule, RegexPasswordRule
 
 
@@ -14,7 +16,7 @@ class PasswordPolicyConfig:
     Rules and their error messages are grouped together dynamically.
     """
     rules: list[PasswordRule] = field(default_factory=lambda: [LengthPasswordRule(), RegexPasswordRule()])
-    msg_valid: str = 'Password is valid.'
+    msg_valid: str = 'password_valid'
 
 
 class PasswordPolicy:
@@ -29,22 +31,33 @@ class PasswordPolicy:
         """
         self.config = config or PasswordPolicyConfig()
 
-    def validate(self, password: str) -> tuple[bool, str]:
+    def validate(self, password: str, i18n_manager: Any | None = None) -> tuple[bool, str]:
         """
         Validates a password against the defined policy.
 
         Args:
             password (str): The password to check.
+            i18n_manager (Any | None): Internationalization manager.
 
         Returns:
             tuple[bool, str]: A boolean indicating success, and an error message if failed.
         """
+        translator = i18n_manager
+        if not translator:
+            translator = I18nManager(locale='en')
+
         for rule in self.config.rules:
+            if not isinstance(rule, PasswordRule):
+                raise TypeError(translator.translate('invalid_password_rule_type', type=type(rule).__name__))
+
             is_valid, msg = rule.validate(password)
             if not is_valid:
-                return False, msg
+                # Pass all rule attributes dynamically as translation kwargs
+                translated_msg = translator.translate(msg, **vars(rule))
+                return False, translated_msg
 
-        return True, self.config.msg_valid
+        valid_msg = translator.translate(self.config.msg_valid)
+        return True, valid_msg
 
 
 def is_password_valid(password: str, repassword: str) -> bool:

@@ -2,12 +2,18 @@
 Unit tests for password validation and policies.
 """
 
+import pytest
+
 from auth_module.core.security.password import (
     PasswordPolicy,
     PasswordPolicyConfig,
     is_password_valid,
 )
-from auth_module.core.security.rules import LengthPasswordRule, RegexPasswordRule
+from auth_module.core.security.rules import (
+    LengthPasswordRule,
+    PasswordRule,
+    RegexPasswordRule,
+)
 
 
 def test_password_policy_default():
@@ -52,3 +58,23 @@ def test_is_password_valid():
     """Test the is_password_valid function for matching and non-matching passwords."""
     assert is_password_valid('same', 'same')
     assert not is_password_valid('same', 'different')
+
+def test_password_policy_invalid_rules():
+    """Test that PasswordPolicy raises TypeError for invalid or unsupported rules."""
+    # 1. Non-PasswordRule object in rules list
+    config_invalid = PasswordPolicyConfig(rules=['not_a_rule_object'])
+    policy_invalid = PasswordPolicy(config_invalid)
+    with pytest.raises(TypeError, match='must be an instance of PasswordRule'):
+        policy_invalid.validate('password')
+
+    # 2. Custom PasswordRule subclass
+    class CustomRule(PasswordRule):
+        def validate(self, password: str) -> tuple[bool, str]:
+            return False, 'custom_rule_err'
+
+    config_custom = PasswordPolicyConfig(rules=[CustomRule()])
+    policy_custom = PasswordPolicy(config_custom)
+
+    is_valid, msg = policy_custom.validate('password')
+    assert is_valid is False
+    assert msg == 'custom_rule_err'

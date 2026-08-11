@@ -10,7 +10,7 @@ from .base import PasswordRule
 class RegexPasswordRule(PasswordRule):
     """Validates that a password matches a regex pattern."""
     pattern: str | None = None
-    message: str = 'Password does not meet the complexity requirements.'
+    message: str = 'password_regex_err'
 
     def validate(self, password: str) -> tuple[bool, str]:
         if self.pattern and not re.match(self.pattern, password):

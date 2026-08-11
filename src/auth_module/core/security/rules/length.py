@@ -9,9 +9,9 @@ from .base import PasswordRule
 class LengthPasswordRule(PasswordRule):
     """Validates that a password meets the minimum length."""
     value: int = 8
-    message: str = 'Password must be at least {value} characters long.'
+    message: str = 'password_length_err'
 
     def validate(self, password: str) -> tuple[bool, str]:
         if len(password) < self.value:
-            return False, self.message.format(value=self.value)
+            return False, self.message
         return True, ''
