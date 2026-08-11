@@ -136,7 +136,18 @@ config = PasswordPolicyConfig(
     msg_valid='Password accepted.'
 )
 
-# 2. Instantiate the policy
+# 2. (Optional) Create your own custom rules
+# You can extend PasswordRule; any attribute you define will be
+# automatically available for formatting the 'message' or translation.
+class MyAdvancedRule(PasswordRule):
+    word: str = 'admin'
+
+    def validate(self, password: str) -> tuple[bool, str]:
+        if self.word in password.lower():
+            return False, 'The password cannot contain the word {word}.'
+        return True, ''
+
+# 3. Instantiate the policy
 my_policy = PasswordPolicy(config)
 
 # 3. Inject the policy into the AuthManager

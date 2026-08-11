@@ -125,7 +125,7 @@ from auth_module.core.auth_manager import AuthManager
 config = PasswordPolicyConfig(
     rules=[
         LengthPasswordRule(
-            value=12, 
+            value=12,
             message='La contraseña debe tener al menos {value} caracteres.'
         ),
         RegexPasswordRule(
@@ -136,7 +136,18 @@ config = PasswordPolicyConfig(
     msg_valid='Contraseña aceptada.'
 )
 
-# 2. Instarnciar la política
+# 2. (Opcional) Crear tus propias reglas
+# Puedes extender PasswordRule; cualquier atributo que definas estará
+# disponible automáticamente para formatear el 'message' o la traducción.
+class MiReglaAvanzada(PasswordRule):
+    palabra: str = 'admin'
+
+    def validate(self, password: str) -> tuple[bool, str]:
+        if self.palabra in password.lower():
+            return False, 'La contraseña no puede contener la palabra {palabra}.'
+        return True, ''
+
+# 3. Instanciar la política
 mi_politica = PasswordPolicy(config)
 
 # 3. Inyectar la política en el AuthManager
