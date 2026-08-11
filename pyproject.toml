@@ -36,6 +36,7 @@ oauth = [
 [dependency-groups]
 dev = [
     "build>=1.5.0",
+    "coverage>=7.15.4",
     "pytest>=9.1.1",
     "pytest-cov>=7.1.0",
 ]
