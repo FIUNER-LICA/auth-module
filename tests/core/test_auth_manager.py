@@ -82,7 +82,7 @@ def test_authenticate_user(auth_manager):
     token = auth_manager.token_manager.generate_token('test@example.com')
     auth_manager.verify_user(token)
 
-    # Should succeed now
+    # Correct credentials
     assert auth_manager.authenticate_user('test@example.com', 'ValidPass123!') is True
 
     # Wrong password
@@ -99,7 +99,7 @@ def test_request_password_recovery(auth_manager):
 
     # 2 emails sent: 1 for registration, 1 for recovery
     assert len(auth_manager.mail_dispatcher.sent_emails) == 2
-    assert "Recovery" in auth_manager.mail_dispatcher.sent_emails[1]['subject'] or 'recuperación' in auth_manager.mail_dispatcher.sent_emails[1]['body'].lower()
+    assert 'Recovery' in auth_manager.mail_dispatcher.sent_emails[1]['subject'] or 'recuperación' in auth_manager.mail_dispatcher.sent_emails[1]['body'].lower()
 
     # Unregistered email should silently fail or log, but currently it raises ValueError
     with pytest.raises(ValueError, match='No user exists'):
@@ -117,7 +117,6 @@ def test_reset_password(auth_manager):
     auth_manager.verify_user(token)
 
     assert auth_manager.authenticate_user('test@example.com', 'NewValidPass123!') is True
-
 
 def test_i18n_spanish_backend(tmp_path):
     """Test that setting locale to 'es' results in Spanish error messages and emails."""
@@ -146,7 +145,6 @@ def test_i18n_spanish_backend(tmp_path):
     assert mail.sent_emails[0]['subject'] == 'Confirma tu cuenta'
     assert 'Por favor confirma tu correo' in mail.sent_emails[0]['body']
 
-
 def test_i18n_custom_translations(tmp_path):
     """Test that custom translation dictionary overrides work."""
     db_file = tmp_path / 'test_users_custom.db'
@@ -169,7 +167,6 @@ def test_i18n_custom_translations(tmp_path):
     manager.register_user('custom@example.com', 'ValidPass123!')
     with pytest.raises(ValueError, match='This email is already registered, try signing in.'):
         manager.register_user('custom@example.com', 'AnotherPass123!')
-
 
 def test_i18n_callable_locale(tmp_path):
     """Test that dynamic locale resolution using a callback works."""
@@ -200,7 +197,6 @@ def test_i18n_callable_locale(tmp_path):
     with pytest.raises(ValueError, match='El usuario ya existe'):
         manager.register_user('dynamic@example.com', 'AnotherPass123!')
 
-
 def test_auth_manager_invalid_policy_type(tmp_path):
     """Test that AuthManager raises TypeError if password_policy is not a PasswordPolicy instance."""
     db_file = tmp_path / 'test_users_invalid_policy.db'
@@ -215,3 +211,46 @@ def test_auth_manager_invalid_policy_type(tmp_path):
             secret_key='test_secret_key',
             password_policy="not_a_password_policy_instance"
         )
+
+def test_password_recovery(auth_manager):
+    """Test the password recovery and reset token verification flow."""
+    manager = auth_manager
+    email = 'recover@example.com'
+
+    # 1. User must exist
+    with pytest.raises(ValueError):
+        manager.request_password_recovery(email)
+
+    manager.register_user(email, 'Pass1234!')
+    manager.user_repository.update_user_verification(email, True)
+
+    # 2. Request recovery
+    assert manager.request_password_recovery(email) is True
+
+    # 3. Generate token to verify.
+    token = manager.token_manager.generate_token(email)
+
+    # 4. Verify valid token
+    assert manager.verify_password_reset_token(token) == email
+
+    # 5. Token marked as used and return None
+    assert manager.verify_password_reset_token(token) is None
+
+    # 6. Verify invalid token
+    assert manager.verify_password_reset_token('invalid_token_string') is None
+
+def test_oauth_user_creation(auth_manager):
+    """Test getting or creating an OAuth user."""
+    manager = auth_manager
+    email = 'oauth@example.com'
+
+    # 1. Create new user
+    user = manager.get_or_create_oauth_user(email, name='OAuth User', provider='google')
+    assert user['email'] == email
+    assert user['name'] == 'OAuth User'
+    assert user['verified'] is True
+
+    # 2. Get existing user
+    user_existing = manager.get_or_create_oauth_user(email, provider='google')
+    assert user_existing['email'] == email
+    assert user_existing['name'] == 'OAuth User'
