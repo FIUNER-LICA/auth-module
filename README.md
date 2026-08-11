@@ -165,6 +165,8 @@ manager = AuthManager(
 
 El módulo soporta traducción y localización tanto para el backend (mensajes de excepción, políticas de contraseña, correos electrónicos) como para el frontend (vistas, mensajes flash, formularios HTML) de forma completamente independiente y desacoplada.
 
+Para entender a fondo su arquitectura y cómo el sistema encapsula los diccionarios base, ver la [Documentación de i18n](src/auth_module/core/i18n/README.md).
+
 Por defecto, **el idioma principal es el español (`es`)**, y se configuran de forma separada en sus correspondientes puntos de inicialización:
 
 ### 1. Configuración del Core (Backend)

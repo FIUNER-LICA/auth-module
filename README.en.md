@@ -165,6 +165,8 @@ manager = AuthManager(
 
 The module supports translation and localization for both the backend (exception messages, password policies, email dispatches) and the frontend (routes, flash messages, HTML forms) in a fully decoupled and independent manner.
 
+To fully understand its architecture and how the system encapsulates base dictionaries, see the [i18n Documentation](src/auth_module/core/i18n/README.en.md).
+
 By default, **the main language is Spanish (`es`)**, and they are configured separately in their respective initialization contexts:
 
 ### 1. Core (Backend) Configuration
