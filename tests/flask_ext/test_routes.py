@@ -2,6 +2,7 @@
 Unit tests for Flask routes.
 """
 import pytest
+from cachelib import SimpleCache
 from flask import Flask
 
 from auth_module.core.auth_manager import AuthManager
@@ -20,7 +21,8 @@ class MockMailDispatcher(MailDispatcher):
 def test_client(tmp_path):
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'test'
-    app.config['SESSION_TYPE'] = 'filesystem'
+    app.config['SESSION_TYPE'] = 'cachelib'
+    app.config['SESSION_CACHELIB'] = SimpleCache()
     app.config['TESTING'] = True
     app.config['WTF_CSRF_ENABLED'] = False  # Probar sin CSRF tokens
 

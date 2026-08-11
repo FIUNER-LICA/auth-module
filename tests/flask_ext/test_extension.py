@@ -3,6 +3,7 @@ Unit tests for the Flask AuthExtension.
 """
 
 import pytest
+from cachelib import SimpleCache
 from flask import Flask
 
 from auth_module.core.auth_manager import AuthManager
@@ -31,7 +32,8 @@ def auth_manager(tmp_path):
 def test_extension_initialization(auth_manager):
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'test'
-    app.config['SESSION_TYPE'] = 'filesystem'
+    app.config['SESSION_TYPE'] = 'cachelib'
+    app.config['SESSION_CACHELIB'] = SimpleCache()
 
     # Initialize extension
     extension = AuthExtension(app, auth_manager)
@@ -47,7 +49,8 @@ def test_extension_initialization(auth_manager):
 def test_extension_i18n_custom_locale(auth_manager):
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'test'
-    app.config['SESSION_TYPE'] = 'filesystem'
+    app.config['SESSION_TYPE'] = 'cachelib'
+    app.config['SESSION_CACHELIB'] = SimpleCache()
     app.config['AUTH_FRONTEND_LOCALE'] = 'en'
 
     # Initialize extension with 'en' locale override
@@ -61,7 +64,8 @@ def test_extension_i18n_custom_locale(auth_manager):
 def test_extension_i18n_custom_translations(auth_manager):
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'test'
-    app.config['SESSION_TYPE'] = 'filesystem'
+    app.config['SESSION_TYPE'] = 'cachelib'
+    app.config['SESSION_CACHELIB'] = SimpleCache()
 
     custom_translations = {
         'es': {
