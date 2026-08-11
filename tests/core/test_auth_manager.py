@@ -29,7 +29,8 @@ def auth_manager(tmp_path):
         mail_dispatcher=mail,
         user_repository=repo,
         base_url='http://localhost:5000',
-        secret_key='test_secret_key'
+        secret_key='test_secret_key',
+        locale='en'
     )
     return manager
 
@@ -116,3 +117,101 @@ def test_reset_password(auth_manager):
     auth_manager.verify_user(token)
 
     assert auth_manager.authenticate_user('test@example.com', 'NewValidPass123!') is True
+
+
+def test_i18n_spanish_backend(tmp_path):
+    """Test that setting locale to 'es' results in Spanish error messages and emails."""
+    db_file = tmp_path / 'test_users_es.db'
+    repo = SQLiteUserRepository(db_path=str(db_file))
+    mail = MockMailDispatcher()
+    manager = AuthManager(
+        mail_dispatcher=mail,
+        user_repository=repo,
+        base_url='http://localhost:5000',
+        secret_key='test_secret_key',
+        locale='es'
+    )
+
+    # 1. Test duplicate user error in Spanish
+    manager.register_user('es@example.com', 'ValidPass123!')
+    with pytest.raises(ValueError, match='El usuario ya existe'):
+        manager.register_user('es@example.com', 'AnotherPass123!')
+
+    # 2. Test password length error in Spanish
+    with pytest.raises(ValueError, match='La contraseña debe tener al menos 8 caracteres'):
+        manager.register_user('new@example.com', 'short')
+
+    # 3. Test email sent in Spanish
+    assert len(mail.sent_emails) == 1
+    assert mail.sent_emails[0]['subject'] == 'Confirma tu cuenta'
+    assert 'Por favor confirma tu correo' in mail.sent_emails[0]['body']
+
+
+def test_i18n_custom_translations(tmp_path):
+    """Test that custom translation dictionary overrides work."""
+    db_file = tmp_path / 'test_users_custom.db'
+    repo = SQLiteUserRepository(db_path=str(db_file))
+    mail = MockMailDispatcher()
+    custom_translations = {
+        'en': {
+            'user_exists': 'This email is already registered, try signing in.'
+        }
+    }
+    manager = AuthManager(
+        mail_dispatcher=mail,
+        user_repository=repo,
+        base_url='http://localhost:5000',
+        secret_key='test_secret_key',
+        locale='en',
+        custom_translations=custom_translations
+    )
+
+    manager.register_user('custom@example.com', 'ValidPass123!')
+    with pytest.raises(ValueError, match='This email is already registered, try signing in.'):
+        manager.register_user('custom@example.com', 'AnotherPass123!')
+
+
+def test_i18n_callable_locale(tmp_path):
+    """Test that dynamic locale resolution using a callback works."""
+    db_file = tmp_path / 'test_users_dynamic.db'
+    repo = SQLiteUserRepository(db_path=str(db_file))
+    mail = MockMailDispatcher()
+
+    current_locale = 'en'
+    def get_locale():
+        return current_locale
+
+    manager = AuthManager(
+        mail_dispatcher=mail,
+        user_repository=repo,
+        base_url='http://localhost:5000',
+        secret_key='test_secret_key',
+        locale=get_locale
+    )
+
+    manager.register_user('dynamic@example.com', 'ValidPass123!')
+
+    # 1. With locale='en', expect English error
+    with pytest.raises(ValueError, match='User already exists'):
+        manager.register_user('dynamic@example.com', 'AnotherPass123!')
+
+    # 2. Change dynamic locale to 'es', expect Spanish error
+    current_locale = 'es'
+    with pytest.raises(ValueError, match='El usuario ya existe'):
+        manager.register_user('dynamic@example.com', 'AnotherPass123!')
+
+
+def test_auth_manager_invalid_policy_type(tmp_path):
+    """Test that AuthManager raises TypeError if password_policy is not a PasswordPolicy instance."""
+    db_file = tmp_path / 'test_users_invalid_policy.db'
+    repo = SQLiteUserRepository(db_path=str(db_file))
+    mail = MockMailDispatcher()
+
+    with pytest.raises(TypeError, match="password_policy debe ser una instancia de PasswordPolicy, se recibió str"):
+        AuthManager(
+            mail_dispatcher=mail,
+            user_repository=repo,
+            base_url='http://localhost:5000',
+            secret_key='test_secret_key',
+            password_policy="not_a_password_policy_instance"
+        )

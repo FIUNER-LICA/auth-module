@@ -22,7 +22,7 @@ class TokenManager:
             salt (str | None): The salt used to namespace the tokens.
         """
         if not secret_key:
-            raise ValueError('A secret_key is required for token generation.')
+            raise ValueError('secret_key_required')
 
         self.secret_key = secret_key
 

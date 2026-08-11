@@ -149,6 +149,56 @@ manager = AuthManager(
 )
 ```
 
+
+## Internationalization (i18n)
+
+The module supports translation and localization for both the backend (exception messages, password policies, email dispatches) and the frontend (routes, flash messages, HTML forms) in a fully decoupled and independent manner.
+
+By default, **the main language is Spanish (`es`)**, and they are configured separately in their respective initialization contexts:
+
+### 1. Core (Backend) Configuration
+When instantiating `AuthManager`, you can define the backend language (`locale`) and/or pass a custom translations dictionary (`custom_translations`):
+
+```python
+auth_manager = AuthManager(
+    mail_dispatcher=mail,
+    user_repository=repo,
+    base_url='http://localhost:5000',
+    secret_key='my_secret',
+    locale='es',                      # Backend locale ('es' or 'en', defaults to 'es')
+    custom_translations={             # Override or add backend translations
+        'en': {
+            'user_exists': 'This email is already registered.'
+        }
+    }
+)
+```
+You can also pass a *callable* function in `locale` to resolve the backend language dynamically per request.
+
+### 2. Flask Extension (Frontend) Configuration
+When instantiating `AuthExtension`, you can configure the frontend language (`locale`) and its translations independently, or control them via the Flask app configuration:
+
+```python
+# Configuration via extension initialization
+AuthExtension(
+    app,
+    auth_manager,
+    locale='es',                      # Frontend locale ('es' or 'en', defaults to 'es')
+    custom_translations={             # Override or add frontend translations
+        'en': {
+            'email': 'Email address'
+        }
+    }
+)
+```
+
+You can also override or define these values globally in the Flask `app.config` object:
+```python
+app = Flask(__name__)
+app.config['AUTH_BACKEND_LOCALE'] = 'es'   # Overrides the Core backend language
+app.config['AUTH_FRONTEND_LOCALE'] = 'en'  # Overrides the templates and flash messages language
+```
+
 ---
 
 ## Project Structure

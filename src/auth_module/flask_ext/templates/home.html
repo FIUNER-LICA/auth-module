@@ -2,20 +2,20 @@
 
 {% block content %}
 <p>
-  Módulo para el registro de usuarios e inicio de sesiones utilizando correo electrónico.
+  {{ t('home_description') }}
 </p>
 <p>
-  Incluye:
+  {{ t('home_includes_title') }}
 </p>
     <ul class="mb-3">
-      <li>Registro de usuario.</li>
-      <li>Confirmación de cuenta por correo electrónico.</li>
-      <li>Inicio de sesión.</li>
-      <li>Recuperación de contraseña.</li>
+      <li>{{ t('home_feature_register') }}</li>
+      <li>{{ t('home_feature_confirm') }}</li>
+      <li>{{ t('home_feature_login') }}</li>
+      <li>{{ t('home_feature_recovery') }}</li>
     </ul>
 
 <div class="d-grid gap-2">
-    <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Iniciar sesión</a>
-    <a href="{{ url_for('auth.register') }}" class="btn btn-outline-primary">Registrarse</a>
+    <a href="{{ url_for('auth.login') }}" class="btn btn-primary">{{ t('login_button') }}</a>
+    <a href="{{ url_for('auth.register') }}" class="btn btn-outline-primary">{{ t('register_button') }}</a>
 </div>
 {% endblock %}

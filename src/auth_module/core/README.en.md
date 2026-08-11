@@ -12,7 +12,10 @@ manager = AuthManager(
     mail_dispatcher=mail,
     user_repository=repo,
     base_url='http://localhost:5000',
-    secret_key='secret'
+    secret_key='secret',
+    backend_locale='es',              # Optional: backend locale ('es' or 'en', defaults to 'es')
+    frontend_locale='es',             # Optional: frontend locale ('es' or 'en', defaults to 'es')
+    custom_translations=None          # Optional: dictionary to override translations
 )
 ```
 Provides ready-to-use methods such as:

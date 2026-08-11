@@ -42,3 +42,37 @@ def test_extension_initialization(auth_manager):
 
     # Check that the blueprint is registered
     assert 'auth' in app.blueprints
+
+
+def test_extension_i18n_custom_locale(auth_manager):
+    app = Flask(__name__)
+    app.config['SECRET_KEY'] = 'test'
+    app.config['SESSION_TYPE'] = 'filesystem'
+    app.config['AUTH_FRONTEND_LOCALE'] = 'en'
+
+    # Initialize extension with 'en' locale override
+    extension = AuthExtension(app, auth_manager)
+
+    assert extension.i18n.get_locale() == 'en'
+    # Test English translation lookup
+    assert extension.i18n.translate('email') == 'Email Address'
+
+
+def test_extension_i18n_custom_translations(auth_manager):
+    app = Flask(__name__)
+    app.config['SECRET_KEY'] = 'test'
+    app.config['SESSION_TYPE'] = 'filesystem'
+
+    custom_translations = {
+        'es': {
+            'email': 'Dirección de Correo'
+        }
+    }
+
+    # Initialize extension with custom translations
+    extension = AuthExtension(app, auth_manager, locale='es', custom_translations=custom_translations)
+
+    assert extension.i18n.translate('email') == 'Dirección de Correo'
+
+    # Fallback key still works
+    assert extension.i18n.translate('password') == 'Contraseña'

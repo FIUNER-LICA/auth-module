@@ -39,6 +39,29 @@ def get_auth_manager():
     return current_app.extensions['auth_module']
 
 
+def _t(key: str, **kwargs) -> str:
+    """
+    Helper to translate a frontend key using the registered frontend translator.
+
+    Args:
+        key (str): The translation key.
+        **kwargs: Additional keyword arguments for formatting the translation string.
+
+    Returns:
+        str: The translated string.
+    """
+    translator = current_app.extensions.get('auth_frontend_i18n')
+    if translator:
+        return translator.translate(key, **kwargs)
+    return key
+
+
+@auth_bp.context_processor
+def inject_i18n():
+    """Injects the 't' function into Jinja templates for localization."""
+    return dict(t=_t)
+
+
 @auth_bp.route('/home')
 def home():
     """Redirects to the index page."""
@@ -56,7 +79,7 @@ def register():
 
         try:
             auth_manager.register_user(email, password)
-            flash('Please check your email to verify your account.', 'success')
+            flash(_t('flash_check_email_verify'), 'success')
             return redirect(url_for('auth.login'))
         except ValueError as e:
             flash(str(e), 'danger')
@@ -73,7 +96,7 @@ def password_recovery():
 
         try:
             auth_manager.request_password_recovery(email)
-            flash('If the email exists, a recovery link has been sent.', 'info')
+            flash(_t('flash_recovery_link_sent'), 'info')
         except ValueError as e:
             flash(str(e), 'danger')
             return redirect(url_for('auth.login'))
@@ -88,7 +111,7 @@ def password_reset():
     """Handles the password reset process after clicking a recovery link."""
     if request.method == 'POST':
         if session.get('pw_reset_number_access_to_pw_reset', 0) > 0:
-            flash('Password reset session expired.', 'danger')
+            flash(_t('flash_reset_session_expired'), 'danger')
             return redirect(url_for('auth.login'))
 
         session['pw_reset_number_access_to_pw_reset'] = session.get('pw_reset_number_access_to_pw_reset', 0) + 1
@@ -100,7 +123,7 @@ def password_reset():
 
         try:
             auth_manager.reset_password(email, password)
-            flash('Password updated successfully.', 'success')
+            flash(_t('flash_password_updated'), 'success')
             return redirect(url_for('auth.login'))
         except ValueError as e:
             flash(str(e), 'danger')
@@ -119,10 +142,10 @@ def pw_reset_token(token):
     if email:
         session['pw_reset_email'] = email
         session['pw_reset_number_access_to_pw_reset'] = 0
-        flash('Email verified. You can now set your new password.', 'success')
+        flash(_t('flash_email_verified'), 'success')
         return redirect(url_for('auth.password_reset'))
 
-    flash('The link is invalid or has expired.', 'danger')
+    flash(_t('flash_link_invalid_expired'), 'danger')
     return redirect(url_for('auth.login'))
 
 
@@ -132,10 +155,10 @@ def verify(token):
     auth_manager = get_auth_manager()
 
     if auth_manager.verify_user(token):
-        flash('Email verified, you can now log in.', 'success')
+        flash(_t('flash_email_verified_login'), 'success')
         return redirect(url_for('auth.login'))
 
-    flash('The link is invalid or has expired.', 'danger')
+    flash(_t('flash_link_invalid_expired'), 'danger')
     return redirect(url_for('auth.register'))
 
 
@@ -151,10 +174,10 @@ def login():
         try:
             if auth_manager.authenticate_user(email, password):
                 session['email'] = email
-                flash('Login successful.', 'success')
+                flash(_t('flash_login_successful'), 'success')
                 return redirect(url_for(_LOGIN_REDIRECT_ENDPOINT))
 
-            flash('Incorrect email or password.', 'danger')
+            flash(_t('flash_incorrect_credentials'), 'danger')
         except ValueError as e:
             flash(str(e), 'warning')
 
@@ -165,7 +188,7 @@ def login():
 def logout():
     """Handles user logout."""
     session.pop('email', None)
-    flash('You have logged out.', 'info')
+    flash(_t('flash_logged_out'), 'info')
     return redirect(url_for('auth.login'))
 
 

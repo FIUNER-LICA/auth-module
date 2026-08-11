@@ -149,6 +149,56 @@ manager = AuthManager(
 )
 ```
 
+
+## Internacionalización (i18n)
+
+El módulo soporta traducción y localización tanto para el backend (mensajes de excepción, políticas de contraseña, correos electrónicos) como para el frontend (vistas, mensajes flash, formularios HTML) de forma completamente independiente y desacoplada.
+
+Por defecto, **el idioma principal es el español (`es`)**, y se configuran de forma separada en sus correspondientes puntos de inicialización:
+
+### 1. Configuración del Core (Backend)
+Al instanciar `AuthManager`, puedes definir el idioma del backend (`locale`) y/o pasar un diccionario de traducciones personalizadas (`custom_translations`):
+
+```python
+auth_manager = AuthManager(
+    mail_dispatcher=mail,
+    user_repository=repo,
+    base_url='http://localhost:5000',
+    secret_key='mi_secreto',
+    locale='es',                      # Idioma del backend ('es' o 'en', por defecto 'es')
+    custom_translations={             # Sobrescribir o añadir traducciones backend
+        'es': {
+            'user_exists': '¡Esta dirección de correo ya está en uso!'
+        }
+    }
+)
+```
+También es posible pasar una función (*callable*) en `locale` para resolver el idioma del backend de manera dinámica en cada petición.
+
+### 2. Configuración en la Extensión de Flask (Frontend)
+Al instanciar `AuthExtension`, puedes configurar el idioma del frontend (`locale`) y sus traducciones de manera independiente, o controlarlo mediante la configuración de la app de Flask:
+
+```python
+# Configuración mediante la inicialización de la extensión
+AuthExtension(
+    app,
+    auth_manager,
+    locale='es',                      # Idioma del frontend ('es' o 'en', por defecto 'es')
+    custom_translations={             # Sobrescribir o añadir traducciones frontend
+        'es': {
+            'email': 'Dirección de correo'
+        }
+    }
+)
+```
+
+También es posible sobrescribir o definir estos valores de manera global a través de `app.config` de Flask:
+```python
+app = Flask(__name__)
+app.config['AUTH_BACKEND_LOCALE'] = 'es'   # Sobrescribe el idioma del Core
+app.config['AUTH_FRONTEND_LOCALE'] = 'en'  # Sobrescribe el idioma de las plantillas y mensajes flash
+```
+
 ---
 
 ## Estructura del Proyecto

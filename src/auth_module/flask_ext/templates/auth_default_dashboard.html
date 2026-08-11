@@ -2,10 +2,9 @@
 
 {% block content %}
 <div class="form-container text-center">
-	<h2>Panel de usuario por defecto</h2>
-	<p>Bienvenido, {{ email }}</p>
-	<p>Para una correcta configuracón, debes establecer el endpoint de redirección
-		una vez que se logea el usario</p>
-	<a href="{{ url_for('auth.logout') }}" class="btn btn-danger w-100">Cerrar sesión</a>
+	<h2>{{ t('default_dashboard_title') }}</h2>
+	<p>{{ t('welcome_message', email=email) }}</p>
+	<p>{{ t('default_dashboard_instructions') }}</p>
+	<a href="{{ url_for('auth.logout') }}" class="btn btn-danger w-100">{{ t('logout_button') }}</a>
 </div>
 {% endblock %}

@@ -44,5 +44,15 @@ from auth_module.flask_ext.extension import set_login_redirect
 set_login_redirect('/my-dashboard')
 ```
 
+
+## Language Configuration (i18n)
+The extension automatically detects the language settings of the `AuthManager`. Additionally, you can override the locales by configuring the corresponding variables in Flask's `app.config` object before or after initializing the extension:
+
+```python
+app = Flask(__name__)
+app.config['AUTH_BACKEND_LOCALE'] = 'es'   # Backend language
+app.config['AUTH_FRONTEND_LOCALE'] = 'en'  # Frontend views and flash messages language
+```
+
 ## Graphical Interface (`templates/`)
 The extension includes all HTML templates rendered with Jinja2. The login, registration, and flash notification screens already have built-in CSS styling. All base code and identifiers are in English, while the texts rendered for the user are in Spanish.

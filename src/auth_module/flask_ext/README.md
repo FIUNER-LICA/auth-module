@@ -44,5 +44,15 @@ from auth_module.flask_ext.extension import set_login_redirect
 set_login_redirect('/mi-dashboard')
 ```
 
+
+## Configuración de Idioma (i18n)
+La extensión detecta automáticamente la configuración de idioma del `AuthManager`. Adicionalmente, puedes sobrescribir el idioma configurando las variables correspondientes en el objeto `app.config` de Flask antes o después de inicializar la extensión:
+
+```python
+app = Flask(__name__)
+app.config['AUTH_BACKEND_LOCALE'] = 'es'   # Idioma del backend
+app.config['AUTH_FRONTEND_LOCALE'] = 'en'  # Idioma de las vistas y mensajes flash
+```
+
 ## Interfaz Gráfica (`templates/`)
 La extensión incluye todas las plantillas HTML renderizadas con Jinja2. Las pantallas de inicio de sesión, registro y notificaciones flash ya tienen estilos CSS integrados. Todo el código base y los identificadores están en inglés, mientras que los textos renderizados para el usuario están en español.
