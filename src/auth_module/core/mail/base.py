@@ -10,6 +10,7 @@ class MailDispatcher(ABC):
 
     @abstractmethod
     def send(self, to_email: str, subject: str, body: str, logo_image_file: str | None = None):
+        # TODO: Explicitar tipo o tipos de retorno, ver diferencia entre console y smtp dispatcher
         """
         Sends an email.
 
