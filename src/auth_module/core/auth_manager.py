@@ -10,7 +10,7 @@ from .mail.base import MailDispatcher
 from .security.hasher import PasswordHasher, WerkzeugPasswordHasher
 from .security.password import PasswordPolicy
 from .tokens import TokenManager
-
+from typing import Any
 
 class AuthManager:
     """
@@ -193,7 +193,7 @@ class AuthManager:
 
         return user.get('password') and self.password_hasher.verify(password, user['password'])
 
-    def get_or_create_oauth_user(self, email: str, name: str | None = None, provider: str | None = None) -> dict[str, any]:
+    def get_or_create_oauth_user(self, email: str, name: str | None = None, provider: str | None = None) -> dict[str, Any]:
         """
         Gets a user or creates a new one marked as verified if they come from an OAuth provider.
 
@@ -203,7 +203,7 @@ class AuthManager:
             provider (str | None): The OAuth provider name (e.g., 'google').
 
         Returns:
-            dict[str, any]: The user's data dictionary.
+            dict[str, Any]: The user's data dictionary.
         """
         user = self.user_repository.get_user_by_email(email)
         if user:
