@@ -3,6 +3,7 @@ Abstract repository definition for user storage.
 """
 
 from abc import ABC, abstractmethod
+from typing import Any
 
 
 class UserRepository(ABC):
@@ -11,7 +12,7 @@ class UserRepository(ABC):
     """
 
     @abstractmethod
-    def get_user_by_email(self, email: str) -> dict[str, any] | None:
+    def get_user_by_email(self, email: str) -> dict[str, Any] | None:
         """
         Retrieves a user by their email address.
 
