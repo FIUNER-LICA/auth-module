@@ -59,6 +59,8 @@ class TokenManager:
 
         Returns:
             str | None: The extracted data if valid and not expired, None otherwise.
+        
+        #TODO Raises: no capturar tan general (Exception), concentrarse en lo especifico.
         """
         try:
             data = self.serializer.loads(
@@ -68,4 +70,7 @@ class TokenManager:
             )
             return data
         except Exception:
+            # TODO: Revisar el manejo de errores: capturar únicamente las
+            # excepciones esperadas y evaluar si las inesperadas deben propagarse
+            # en lugar de convertir todos los fallos en None. Luego agregar a documentación
             return None
