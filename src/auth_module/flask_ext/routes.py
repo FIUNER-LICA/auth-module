@@ -74,9 +74,11 @@ def register():
     if request.method == 'POST':
         email = request.form.get('email')
         password = request.form.get('password')
+        repassword = request.form.get('repassword')
 
+        # if is_password_valid(password, repassword): # TODO: Implement password validation logic here
+        
         auth_manager = get_auth_manager()
-
         try:
             auth_manager.register_user(email, password)
             flash(_t('flash_check_email_verify'), 'success')
