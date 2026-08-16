@@ -120,6 +120,7 @@ def password_reset():
 
         email = session.get('pw_reset_email')
         password = request.form.get('password')
+        repassword = request.form.get('repassword') # TODO: Implementar validación de password
 
         auth_manager = get_auth_manager()
 
