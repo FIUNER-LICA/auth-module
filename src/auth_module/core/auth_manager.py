@@ -190,7 +190,8 @@ class AuthManager:
 
         if not user.get('verified'):
             raise ValueError(self.i18n.translate('email_not_verified'))
-
+        # TODO: En la siguiente línea, user podría no tener password, por lo que se debe manejar ese caso 
+        # antes de acceder al password
         return user.get('password') and self.password_hasher.verify(password, user['password'])
 
     def get_or_create_oauth_user(self, email: str, name: str | None = None, provider: str | None = None) -> dict[str, Any]:
