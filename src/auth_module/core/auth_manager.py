@@ -234,7 +234,8 @@ class AuthManager:
         if not self.user_repository.get_user_by_email(email):
             raise ValueError(self.i18n.translate('no_user_with_email'))
 
-        token = self.token_manager.generate_token(email)
+        token = self.token_manager.generate_token(email) # TODO: que el token de recuperación
+                                                         # sea diferente al de la linea 90
         recovery_url = f'{self.base_url}/reset-password/{token}'
 
         self.mail_dispatcher.send(
