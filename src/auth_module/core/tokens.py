@@ -37,8 +37,8 @@ class TokenManager:
 
         self.serializer = URLSafeTimedSerializer(self.secret_key)
 
-    def generate_token(self, data: str) -> str: # TODO: Cambiar el tipo de data a Any 
-                                                # para permitir más flexibilidad en los datos que se 
+    def generate_token(self, data: str) -> str: # TODO: Cambiar el tipo de data a Any
+                                                # para permitir más flexibilidad en los datos que se
                                                 # pueden codificar.
         """
         Generates a secure token for the provided data (e.g., an email address).
@@ -61,7 +61,7 @@ class TokenManager:
 
         Returns:
             str | None: The extracted data if valid and not expired, None otherwise.
-        
+
         #TODO Raises: no capturar tan general (Exception), concentrarse en lo especifico.
         """
         try:

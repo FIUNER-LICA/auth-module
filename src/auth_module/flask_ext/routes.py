@@ -59,7 +59,7 @@ def _t(key: str, **kwargs) -> str:
 @auth_bp.context_processor
 def inject_i18n():
     """Injects the 't' function into Jinja templates for localization."""
-    return dict(t=_t)
+    return {'t': _t}
 
 
 @auth_bp.route('/home')
@@ -77,7 +77,7 @@ def register():
         repassword = request.form.get('repassword')
 
         # if is_password_valid(password, repassword): # TODO: Implement password validation logic here
-        
+
         auth_manager = get_auth_manager()
         try:
             auth_manager.register_user(email, password)

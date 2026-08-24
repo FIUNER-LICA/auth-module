@@ -1,7 +1,9 @@
 """
 Unit tests for SQLite user repository.
 """
+
 import pytest
+
 from auth_module.core.db.sqlite_repository import SQLiteUserRepository
 
 

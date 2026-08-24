@@ -1,6 +1,7 @@
 """
 Unit tests for Flask routes.
 """
+
 import pytest
 from cachelib import SimpleCache
 from flask import Flask

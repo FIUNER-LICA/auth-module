@@ -3,6 +3,7 @@ Authentication manager that encapsulates user registration, login, and recovery 
 """
 
 from collections.abc import Callable
+from typing import Any
 
 from .db.repository import UserRepository
 from .i18n import I18nManager
@@ -10,7 +11,7 @@ from .mail.base import MailDispatcher
 from .security.hasher import PasswordHasher, WerkzeugPasswordHasher
 from .security.password import PasswordPolicy
 from .tokens import TokenManager
-from typing import Any
+
 
 class AuthManager:
     """
