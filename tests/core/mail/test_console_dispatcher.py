@@ -9,19 +9,20 @@ def test_console_mail_dispatcher(capsys):
     """Test that the ConsoleMailDispatcher correctly prints to stdout."""
     dispatcher = ConsoleMailDispatcher()
 
-    # Enviar un mail por consola
+    # Send a test email via the console dispatcher
     result = dispatcher.send(
         to_email='test@example.com',
         subject='Test Subject',
         body='This is a test body.'
     )
 
-    # Debe retornar True siempre
-    assert result is True
+    # Must return always None
+    assert result is None
 
-    # Capturar la salida de consola
+    # Check the captured output
     captured = capsys.readouterr()
 
+    assert '--- [CONSOLE MAIL DISPATCHER] ---' in captured.out
     assert 'To: test@example.com' in captured.out
     assert 'Subject: Test Subject' in captured.out
     assert 'This is a test body.' in captured.out
