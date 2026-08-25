@@ -13,8 +13,7 @@ manager = AuthManager(
     user_repository=repo,
     base_url='http://localhost:5000',
     secret_key='secreto',
-    backend_locale='es',              # Opcional: idioma del backend ('es' o 'en', por defecto 'es')
-    frontend_locale='es',             # Opcional: idioma del frontend ('es' o 'en', por defecto 'es')
+    locale='es',                      # Opcional: idioma o función callback para traducciones
     custom_translations=None          # Opcional: diccionario para sobrescribir traducciones
 )
 ```
@@ -29,7 +28,6 @@ Define la interfaz `UserRepository` que garantiza que cualquier implementación 
 Se provee una implementación por defecto: `SQLiteUserRepository`, ideal para un despliegue rápido sin infraestructura compleja.
 
 ### 3. Gestor de Tokens (`tokens.py`)
-Utiliza `itsdangerous` para la generación segura de JWT tokens usados en:
-- Verificación de correo electrónico.
-- Recuperación de contraseñas.
-Los tokens están cifrados y tienen un tiempo de expiración.
+Utiliza `itsdangerous` para la generación segura de tokens cifrados con un tiempo de expiración.
+- **Tokens Multipropósito:** Los tokens almacenan diccionarios con el payload y su finalidad (ej. `{'email': email, 'purpose': 'recovery'}`). Esto garantiza que un token emitido para confirmar un correo electrónico no pueda utilizarse como acceso de puerta trasera para cambiar contraseñas.
+- **Manejo de Errores Seguro:** Las validaciones aíslan explícitamente fallos propios del token (como `SignatureExpired` y `BadSignature` que retornan `None`), mientras que cualquier otra anomalía o excepción del sistema se propaga libremente para un correcto rastreo de errores en los logs.

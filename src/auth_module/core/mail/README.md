@@ -3,8 +3,8 @@
 El paquete de correos gestiona toda la comunicación saliente con el usuario (verificación de cuentas y recuperación de contraseñas).
 
 ## Interfaz Abstracta (`base.py`)
-Todas las clases de despacho de correos implementan la clase abstracta `MailDispatcher`, que requiere el método `send(to_email, subject, body)`. 
-Esto permite intercambiar proveedores (SendGrid, AWS SES, SMTP, Consola) sin modificar la lógica del `AuthManager`.
+Todas las clases de despacho de correos implementan la clase abstracta `MailDispatcher`, que define el método `send(to_email, subject, body, logo_image_file) -> None`. 
+Este método ante cualquier fallo o impedimento crítico durante el envío (como credenciales inválidas o conexión rechazada), la implementación levantará una excepción. Esto permite intercambiar proveedores de manera completamente transparente sin modificar el flujo ni el manejo de errores del `AuthManager`.
 
 ## Despachadores Incluidos
 
