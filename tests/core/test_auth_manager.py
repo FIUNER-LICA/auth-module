@@ -63,7 +63,7 @@ def test_verify_user(auth_manager):
 
     # We need to manually generate a token for testing or extract it from the email body
     # Let's just generate one using the internal token manager
-    token = auth_manager.token_manager.generate_token('test@example.com')
+    token = auth_manager.token_manager.generate_token({'email': 'test@example.com', 'purpose': 'verification'})
 
     assert auth_manager.verify_user(token) is True
 
@@ -79,7 +79,7 @@ def test_authenticate_user(auth_manager):
         auth_manager.authenticate_user('test@example.com', 'ValidPass123!')
 
     # Verify the user
-    token = auth_manager.token_manager.generate_token('test@example.com')
+    token = auth_manager.token_manager.generate_token({'email': 'test@example.com', 'purpose': 'verification'})
     auth_manager.verify_user(token)
 
     # Correct credentials
@@ -113,7 +113,7 @@ def test_reset_password(auth_manager):
     auth_manager.reset_password('test@example.com', 'NewValidPass123!')
 
     # Verify it was updated (we can check by trying to authenticate if it was verified)
-    token = auth_manager.token_manager.generate_token('test@example.com')
+    token = auth_manager.token_manager.generate_token({'email': 'test@example.com', 'purpose': 'verification'})
     auth_manager.verify_user(token)
 
     assert auth_manager.authenticate_user('test@example.com', 'NewValidPass123!') is True
@@ -228,7 +228,7 @@ def test_password_recovery(auth_manager):
     assert manager.request_password_recovery(email) is True
 
     # 3. Generate token to verify.
-    token = manager.token_manager.generate_token(email)
+    token = manager.token_manager.generate_token({'email': email, 'purpose': 'recovery'})
 
     # 4. Verify valid token
     assert manager.verify_password_reset_token(token) == email

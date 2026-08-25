@@ -88,7 +88,7 @@ class AuthManager:
         pwd_hash = self.password_hasher.hash(password)
         self.user_repository.create_user(email=email, password_hash=pwd_hash, verified=False)
 
-        token = self.token_manager.generate_token(email)
+        token = self.token_manager.generate_token({'email': email, 'purpose': 'verification'})
         verify_url = f'{self.base_url}/verify/{token}'
 
         self.mail_dispatcher.send(
@@ -133,7 +133,11 @@ class AuthManager:
         Returns:
             bool: True if successful, False otherwise.
         """
-        email = self.token_manager.confirm_token(token)
+        data = self.token_manager.confirm_token(token)
+        if not isinstance(data, dict) or data.get('purpose') != 'verification':
+            return False
+
+        email = data.get('email')
         if not email:
             return False
 
@@ -154,8 +158,12 @@ class AuthManager:
         Returns:
             str | None: The associated email if valid, None otherwise.
         """
-        email = self.token_manager.confirm_token(token)
+        data = self.token_manager.confirm_token(token)
 
+        if not isinstance(data, dict) or data.get('purpose') != 'recovery':
+            return None
+
+        email = data.get('email')
         user = self.user_repository.get_user_by_email(email) if email else None
 
         if token in self.used_pw_reset_tokens and user:
@@ -191,9 +199,10 @@ class AuthManager:
 
         if not user.get('verified'):
             raise ValueError(self.i18n.translate('email_not_verified'))
-        # TODO: En la siguiente línea, user podría no tener password, por lo que se debe manejar ese caso 
-        # antes de acceder al password
-        return user.get('password') and self.password_hasher.verify(password, user['password'])
+        if not user.get('password'):
+            return False
+
+        return self.password_hasher.verify(password, user['password'])
 
     def get_or_create_oauth_user(self, email: str, name: str | None = None, provider: str | None = None) -> dict[str, Any]:
         """
@@ -236,8 +245,7 @@ class AuthManager:
         if not self.user_repository.get_user_by_email(email):
             raise ValueError(self.i18n.translate('no_user_with_email'))
 
-        token = self.token_manager.generate_token(email) # TODO: que el token de recuperación
-                                                         # sea diferente al de la linea 90
+        token = self.token_manager.generate_token({'email': email, 'purpose': 'recovery'})
         recovery_url = f'{self.base_url}/reset-password/{token}'
 
         self.mail_dispatcher.send(
