@@ -76,8 +76,9 @@ def register():
         password = request.form.get('password')
         repassword = request.form.get('repassword')
 
-        # if is_password_valid(password, repassword): # TODO: Implement password validation logic here
-
+        if password != repassword:
+            flash(_t('passwords_not_match'), 'danger')
+            return render_template('register.html')
         auth_manager = get_auth_manager()
         try:
             auth_manager.register_user(email, password)
@@ -120,7 +121,11 @@ def password_reset():
 
         email = session.get('pw_reset_email')
         password = request.form.get('password')
-        repassword = request.form.get('repassword') # TODO: Implementar validación de password
+        repassword = request.form.get('repassword')
+
+        if password != repassword:
+            flash(_t('passwords_not_match'), 'danger')
+            return render_template('password_reset.html')
 
         auth_manager = get_auth_manager()
 
