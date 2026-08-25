@@ -91,7 +91,7 @@ def test_verify_route(test_client):
     client, manager = test_client
     manager.register_user('verify@test.com', 'Password123!')
 
-    token = manager.token_manager.generate_token('verify@test.com')
+    token = manager.token_manager.generate_token({'email': 'verify@test.com', 'purpose': 'verification'})
 
     response = client.get(f'/auth/verify/{token}')
     assert response.status_code == 302

@@ -4,8 +4,9 @@ Token generation and validation using itsdangerous.
 
 import hashlib
 import hmac
+from typing import Any
 
-from itsdangerous import URLSafeTimedSerializer
+from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 
 
 class TokenManager:
@@ -37,21 +38,19 @@ class TokenManager:
 
         self.serializer = URLSafeTimedSerializer(self.secret_key)
 
-    def generate_token(self, data: str) -> str: # TODO: Cambiar el tipo de data a Any
-                                                # para permitir más flexibilidad en los datos que se
-                                                # pueden codificar.
+    def generate_token(self, data: Any) -> str:
         """
         Generates a secure token for the provided data (e.g., an email address).
 
         Args:
-            data (str): The data to encode in the token.
+            data (Any): The data to encode in the token.
 
         Returns:
             str: The generated token.
         """
         return self.serializer.dumps(data, salt=self.salt)
 
-    def confirm_token(self, token: str, expiration_seconds: int = 3600) -> str | None:
+    def confirm_token(self, token: str, expiration_seconds: int = 3600) -> Any | None:
         """
         Confirms the validity of a token and extracts the embedded data.
 
@@ -60,9 +59,10 @@ class TokenManager:
             expiration_seconds (int): Maximum age of the token in seconds.
 
         Returns:
-            str | None: The extracted data if valid and not expired, None otherwise.
+            Any | None: The extracted data if valid and not expired, None otherwise.
 
-        #TODO Raises: no capturar tan general (Exception), concentrarse en lo especifico.
+        Raises:
+            Unexpected exceptions from itsdangerous or decoding issues are propagated.
         """
         try:
             data = self.serializer.loads(
@@ -71,8 +71,5 @@ class TokenManager:
                 max_age=expiration_seconds
             )
             return data
-        except Exception:
-            # TODO: Revisar el manejo de errores: capturar únicamente las
-            # excepciones esperadas y evaluar si las inesperadas deben propagarse
-            # en lugar de convertir todos los fallos en None. Luego agregar a documentación
+        except (SignatureExpired, BadSignature):
             return None
