@@ -160,6 +160,80 @@ manager = AuthManager(
 )
 ```
 
+---
+
+### 🤖 Agent Integration Prompt
+The following text block is designed for an AI agent to quickly understand the module's architecture and how to integrate it into a Python project, whether with Flask or without it:
+
+```text
+Integrate Authentication Module into a Python application for robust, framework-agnostic user management.
+
+## Available Module APIs
+
+### Core Authentication (auth_module.core.auth_manager)
+- AuthManager: Main orchestrator. Methods: `register_user(email, password)`, `authenticate_user(email, password)`, `verify_user(token)`, `request_password_recovery(email)`, `reset_password(email, password)`.
+- TokenManager: Generates and verifies secure JWT tokens for email verification and recovery.
+
+### Security & Policies (auth_module.core.security)
+- PasswordPolicyConfig: Group constraints and error messages using `rules=[]`.
+- Rules: `LengthRule(value, message)`, `RegexRule(pattern, message)`, or inherit from `AbsPasswordRule` for custom logic.
+- PasswordHasher: Uses `WerkzeugPasswordHasher` by default (scrypt).
+
+### Mail Dispatching (auth_module.core.mail)
+- MailBase: Abstract interface for sending emails.
+- ConsoleMailDispatcher: For local development. Prints emails to stdout.
+- SmtpMailDispatcher: For production. Connects to real SMTP servers.
+
+### Flask Extension (auth_module.flask_ext)
+- AuthExtension(app, manager): Automatically registers blueprints, error handlers, and templates.
+- @login_required: Decorator to protect Flask routes.
+- set_login_redirect(endpoint): Configure post-login redirection.
+
+## Initialization
+The core logic requires dependency injection. You must provide a mail dispatcher, a user repository, and configuration variables (like secret_key and base_url).
+
+## Example: Core Backend Usage (Python)
+from auth_module.core.auth_manager import AuthManager
+from auth_module.core.db.sqlite_repository import SQLiteUserRepository
+from auth_module.core.mail.console_dispatcher import ConsoleMailDispatcher
+
+repo = SQLiteUserRepository(db_path='./users.db')
+mail = ConsoleMailDispatcher()
+auth_manager = AuthManager(
+    mail_dispatcher=mail,
+    user_repository=repo,
+    base_url='http://localhost:5000',
+    secret_key='your_secret_key'
+)
+auth_manager.register_user('user@example.com', 'SecurePass123!')
+
+## Example: Flask Integration
+from flask import Flask
+from auth_module.flask_ext.extension import AuthExtension
+from auth_module.flask_ext.decorators import login_required
+
+app = Flask(__name__)
+# ... initialize auth_manager ...
+AuthExtension(app, auth_manager)
+
+@app.route('/protected')
+@login_required
+def protected():
+    return "This is protected"
+
+## When to Use Core vs Flask Extension
+- Core: You are building a FastAPI, Django, or CLI application and only need the business logic.
+- Flask Extension: You are building a Flask app and want ready-to-use routes (/auth/login, /auth/register) and HTML templates.
+
+## Environment Variables (For SMTP Mail)
+- MAIL_SERVER, MAIL_PORT, MAIL_USERNAME, MAIL_PASSWORD, NAME_SENDER, MAIL_SENDER_ADDRESS
+
+## Detailed Documentation
+- Core: auth_module/core/README.en.md
+- Security: auth_module/core/security/README.en.md
+- Mail: auth_module/core/mail/README.en.md
+- Flask: auth_module/flask_ext/README.en.md
+```
 
 ## Internationalization (i18n)
 
