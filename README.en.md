@@ -162,8 +162,14 @@ manager = AuthManager(
 
 ---
 
-### 🤖 Agent Integration Prompt
-The following text block is designed for an AI agent to quickly understand the module's architecture and how to integrate it into a Python project, whether with Flask or without it:
+### Agent Integration Prompt
+The following text block is designed for an AI agent to quickly understand the module's architecture and how to integrate it into your project.
+
+**Recommendation:** Ensure that the agent you give this instruction to has access to both this module's source code and your project's source code in its context *scope*. Then, send an initial prompt similar to this:
+
+> "Using strictly the provided documentation, integrate the authentication module library 'auth-module' into my project. *(Add your specific details here: whether you want just the core or the GUI as well, where to redirect after login, where and how to store users, language, etc.)*"
+
+And immediately after, attach this technical context block:
 
 ```text
 Integrate Authentication Module into a Python application for robust, framework-agnostic user management.
@@ -188,6 +194,10 @@ Integrate Authentication Module into a Python application for robust, framework-
 - AuthExtension(app, manager): Automatically registers blueprints, error handlers, and templates.
 - @login_required: Decorator to protect Flask routes.
 - set_login_redirect(endpoint): Configure post-login redirection.
+
+### Internationalization & Messages (auth_module.core.i18n)
+- I18nManager: Manages all UI and error texts.
+- Customization: Set the native language by passing `locale='es'` or `'en'`, and override any system text by injecting your own dictionary into the `custom_translations` parameter during initialization.
 
 ## Initialization
 The core logic requires dependency injection. You must provide a mail dispatcher, a user repository, and configuration variables (like secret_key and base_url).

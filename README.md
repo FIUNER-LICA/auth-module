@@ -162,8 +162,14 @@ manager = AuthManager(
 
 ---
 
-### 🤖 Prompt de Integración para Agentes (AI)
-El siguiente bloque de texto está diseñado para que un agente de IA pueda comprender rápidamente la arquitectura del módulo y cómo integrarlo en un proyecto Python, ya sea con Flask o sin él:
+### Prompt de Integración para Agentes (AI)
+El siguiente bloque de texto está diseñado para que un agente de IA pueda comprender rápidamente la arquitectura del módulo y cómo integrarlo en tu proyecto. 
+
+**Recomendación:** Asegúrate de que el agente al cual le des esta instrucción tenga en el *scope* de su contexto acceso al código fuente de este módulo y al código del proyecto donde va a ser integrado. Luego, envíale un prompt inicial similar a este:
+
+> "Usando estrictamente la documentación provista, integra la biblioteca del módulo de autenticación 'auth-module' en mi proyecto. *(Añade aquí tus detalles: si quieres solo el core o también la interfaz gráfica, a dónde redirigir luego del login, dónde y cómo almacenar los usuarios, idioma, etc.)*"
+
+Y a continuación, adjúntale este bloque de contexto técnico:
 
 ```text
 Integra el Módulo de Autenticación en una aplicación Python para una gestión de usuarios robusta y agnóstica de frameworks.
@@ -188,6 +194,10 @@ Integra el Módulo de Autenticación en una aplicación Python para una gestión
 - AuthExtension(app, manager): Registra automáticamente blueprints, manejadores de error y plantillas.
 - @login_required: Decorador para proteger rutas de Flask.
 - set_login_redirect(endpoint): Configura la redirección post-login.
+
+### Internacionalización y Mensajes (auth_module.core.i18n)
+- I18nManager: Gestiona todos los textos de la interfaz y errores.
+- Personalización: Configura el idioma nativo pasando `locale='es'` o `'en'`, y sobrescribe cualquier texto del sistema inyectando tu propio diccionario en el parámetro `custom_translations` durante la inicialización.
 
 ## Inicialización
 La lógica core requiere inyección de dependencias. Debes proveer un despachador de correos, un repositorio de usuarios y variables de configuración (como secret_key y base_url).
