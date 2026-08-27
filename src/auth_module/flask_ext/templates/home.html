@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<p>
+  {{ t('home_description') }}
+</p>
+<p>
+  {{ t('home_includes_title') }}
+</p>
+    <ul class="mb-3">
+      <li>{{ t('home_feature_register') }}</li>
+      <li>{{ t('home_feature_confirm') }}</li>
+      <li>{{ t('home_feature_login') }}</li>
+      <li>{{ t('home_feature_recovery') }}</li>
+    </ul>
+
+<div class="d-grid gap-2">
+    <a href="{{ url_for('auth.login') }}" class="btn btn-primary">{{ t('login_button') }}</a>
+    <a href="{{ url_for('auth.register') }}" class="btn btn-outline-primary">{{ t('register_button') }}</a>
+</div>
+{% endblock %}

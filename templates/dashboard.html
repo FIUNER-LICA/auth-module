@@ -1,9 +1,0 @@
-{% extends 'base.html' %}
-
-{% block content %}
-<div class="form-container text-center">
-	<h2>Panel de usuario</h2>
-	<p>¡Bienvenid@! {{ email }}</p>
-	<a href="{{ url_for('auth.logout') }}" class="btn btn-danger w-100">Cerrar sesión</a>
-</div>
-{% endblock %}
