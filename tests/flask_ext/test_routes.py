@@ -70,13 +70,13 @@ def test_register_post(test_client):
     })
     # After register, redirects to login
     assert response.status_code == 302
-    assert manager.user_repository.get_user_by_email('newuser@test.com') is not None
+    assert manager._AuthManager__user_repository.get_user_by_email('newuser@test.com') is not None
 
 
 def test_login_post(test_client):
     client, manager = test_client
     manager.register_user('user@test.com', 'Password123!')
-    manager.user_repository.update_user_verification('user@test.com', True)
+    manager._AuthManager__user_repository.update_user_verification('user@test.com', True)
 
     response = client.post('/auth/login', data={
         'email': 'user@test.com',
@@ -91,11 +91,11 @@ def test_verify_route(test_client):
     client, manager = test_client
     manager.register_user('verify@test.com', 'Password123!')
 
-    token = manager.token_manager.generate_token({'email': 'verify@test.com', 'purpose': 'verification'})
+    token = manager._AuthManager__token_manager.generate_token({'email': 'verify@test.com', 'purpose': 'verification'})
 
     response = client.get(f'/auth/verify/{token}')
     assert response.status_code == 302
-    assert manager.user_repository.get_user_by_email('verify@test.com')['verified'] is True
+    assert manager._AuthManager__user_repository.get_user_by_email('verify@test.com')['verified'] is True
 
 
 def test_logout(test_client):

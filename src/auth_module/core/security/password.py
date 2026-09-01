@@ -22,14 +22,14 @@ class PasswordPolicyConfig:
 class PasswordPolicy:
     """Configuration for password strength requirements using a customizable config."""
 
-    def __init__(self, config: PasswordPolicyConfig | None = None):
+    def __init__(self, config: PasswordPolicyConfig | None = None) -> None:
         """
         Initializes the password policy with the given configuration.
 
         Args:
             config (PasswordPolicyConfig | None): Configuration and customized messages.
         """
-        self.config = config or PasswordPolicyConfig()
+        self.__config = config or PasswordPolicyConfig()
 
     def validate(self, password: str, i18n_manager: Any | None = None) -> tuple[bool, str]:
         """
@@ -46,7 +46,7 @@ class PasswordPolicy:
         if not translator:
             translator = I18nManager(locale='en')
 
-        for rule in self.config.rules:
+        for rule in self.__config.rules:
             if not isinstance(rule, PasswordRule):
                 raise TypeError(translator.translate('invalid_password_rule_type', type=type(rule).__name__))
 
@@ -56,7 +56,7 @@ class PasswordPolicy:
                 translated_msg = translator.translate(msg, **vars(rule))
                 return False, translated_msg
 
-        valid_msg = translator.translate(self.config.msg_valid)
+        valid_msg = translator.translate(self.__config.msg_valid)
         return True, valid_msg
 
 

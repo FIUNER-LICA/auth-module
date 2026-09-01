@@ -24,7 +24,7 @@ class AuthExtension:
         auth_manager: AuthManager | None = None,
         locale: str | Callable[[], str] = 'es',
         custom_translations: dict[str, dict[str, str]] | None = None
-    ):
+    ) -> None:
         """
         Initializes the extension.
 
@@ -35,12 +35,12 @@ class AuthExtension:
             custom_translations: Custom overrides for frontend translations.
         """
         self.auth_manager = auth_manager
-        self.locale = locale
-        self.custom_translations = custom_translations
+        self.__locale = locale
+        self.__custom_translations = custom_translations
         if app is not None:
             self.init_app(app, auth_manager)
 
-    def init_app(self, app: Flask, auth_manager: AuthManager | None = None):
+    def init_app(self, app: Flask, auth_manager: AuthManager | None = None) -> None:
         """
         Registers the extension with the Flask application.
 
@@ -63,14 +63,14 @@ class AuthExtension:
         # Read the locales from Flask config if available, fallback to parameters
         app_backend = app.config.get('AUTH_BACKEND_LOCALE')
         if app_backend:
-            self.auth_manager.i18n.set_locale(app_backend)
+            self.auth_manager.set_locale(app_backend)
 
-        app_frontend = app.config.get('AUTH_FRONTEND_LOCALE') or self.locale
+        app_frontend = app.config.get('AUTH_FRONTEND_LOCALE') or self.__locale
 
         self.i18n = I18nManager(
             locale=app_frontend,
             default_translations=FRONTEND_TRANSLATIONS,
-            custom_translations=self.custom_translations
+            custom_translations=self.__custom_translations
         )
 
         app.extensions['auth_frontend_i18n'] = self.i18n

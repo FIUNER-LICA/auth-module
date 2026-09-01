@@ -13,7 +13,7 @@ class SQLiteUserRepository(UserRepository):
     A simple SQLite-backed user repository.
     """
 
-    def __init__(self, db_path: str):
+    def __init__(self, db_path: str) -> None:
         """
         Initializes the SQLite database connection and ensures tables exist.
 
@@ -23,12 +23,12 @@ class SQLiteUserRepository(UserRepository):
         if not db_path:
             raise ValueError('A db_path must be provided to initialize the SQLite repository.')
 
-        self.db_path = db_path
+        self.__db_path = db_path
         self._initialize_db()
 
     def _get_connection(self) -> sqlite3.Connection:
         """Returns a new database connection."""
-        conn = sqlite3.connect(self.db_path)
+        conn = sqlite3.connect(self.__db_path)
         conn.row_factory = sqlite3.Row
         return conn
 
