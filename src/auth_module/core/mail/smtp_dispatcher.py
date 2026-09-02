@@ -16,7 +16,7 @@ class SmtpMailDispatcher(MailDispatcher):
     def __init__(self):
         self._mail = None
 
-    def initialize(self, config: AbsEmailServerConfig):
+    def initialize(self, config: AbsEmailServerConfig) -> None:
         """
         Initializes the SMTP connection parameters using the provided configuration.
 
@@ -42,7 +42,7 @@ class SmtpMailDispatcher(MailDispatcher):
             use_tls=mail_use_tls
         )
 
-    def send(self, to_email: str, subject: str, body: str, logo_image_file: str | None = None):
+    def send(self, to_email: str, subject: str, body: str, logo_image_file: str | None = None) -> None:
         """
         Sends an email.
 
