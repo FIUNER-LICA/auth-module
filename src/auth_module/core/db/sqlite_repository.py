@@ -4,6 +4,7 @@ SQLite implementation of the user repository.
 
 import sqlite3
 from contextlib import closing
+from typing import Any
 
 from .repository import UserRepository
 
@@ -45,7 +46,7 @@ class SQLiteUserRepository(UserRepository):
                 )
             ''')
 
-    def get_user_by_email(self, email: str) -> dict[str, any] | None:
+    def get_user_by_email(self, email: str) -> dict[str, Any] | None:
         with closing(self._get_connection()) as conn, conn:
             cursor = conn.execute('SELECT * FROM users WHERE email = ?', (email,))
             row = cursor.fetchone()
