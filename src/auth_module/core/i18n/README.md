@@ -22,10 +22,10 @@ Las claves del backend (definidas en `BACKEND_TRANSLATIONS`) contemplan los mens
 ## Inyectar Traducciones (Custom Translations)
 Siguiendo las mejores prácticas, **nunca** se deben modificar los archivos internos para cambiar una traducción o añadir un nuevo idioma (como Francés `fr`).
 
-El manejador está preparado para recibir un diccionario llamado `custom_translations` al momento de inicializar los managers (ya sea `AuthManager` o `AuthExtension`). Cualquier diccionario inyectado se fusionará sobre la configuración en memoria, sobreescribiendo las claves existentes y añadiendo los idiomas nuevos automáticamente.
+El manejador está preparado para recibir un diccionario llamado `custom_translations` al momento de inicializar los managers (ya sea `AuthManager` o `FlaskExtension`). Cualquier diccionario inyectado se fusionará sobre la configuración en memoria, sobreescribiendo las claves existentes y añadiendo los idiomas nuevos automáticamente.
 
 ## Ejemplos de implementación
-Inicializa el `AuthManager` o `AuthExtension` con el parámetro `custom_translations` para sobrescribir o añadir nuevas traducciones. Por ejemplo:
+Inicializa el `AuthManager` o `FlaskExtension` con el parámetro `custom_translations` para sobrescribir o añadir nuevas traducciones. Por ejemplo:
 ```python
 # Traducciones personalizadas para el backend
 custom_backend_translations = {

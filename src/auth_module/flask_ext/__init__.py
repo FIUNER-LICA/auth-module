@@ -7,7 +7,6 @@ including blueprints, routes, templates, and view controllers.
 """
 
 from .decorators import login_required
-from .extension import AuthExtension
-from .routes import set_login_redirect
+from .extension import FlaskExtension
 
-__all__ = ['AuthExtension', 'login_required', 'set_login_redirect']
+__all__ = ['FlaskExtension', 'login_required']

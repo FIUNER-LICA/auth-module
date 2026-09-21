@@ -38,16 +38,16 @@ def test_salt_derivation_without_explicit_salt():
     manager3 = TokenManager(secret_key='secret_two')
 
     # Same secret key generates the same derived salt
-    assert manager1.salt == manager2.salt
+    assert manager1._TokenManager__salt == manager2._TokenManager__salt
 
     # Different secret keys generate different derived salts
-    assert manager1.salt != manager3.salt
+    assert manager1._TokenManager__salt != manager3._TokenManager__salt
 
     # Salt is not a fixed static value
-    assert manager1.salt != 'email-confirm'
+    assert manager1._TokenManager__salt != 'email-confirm'
 
-    assert len(manager1.salt) > 0
+    assert len(manager1._TokenManager__salt) > 0
 
 def test_explicit_salt():
     manager = TokenManager(secret_key='test_secret', salt='custom-salt')
-    assert manager.salt == 'custom-salt'
+    assert manager._TokenManager__salt == 'custom-salt'

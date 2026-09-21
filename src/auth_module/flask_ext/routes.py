@@ -26,7 +26,7 @@ auth_bp = Blueprint(
 # Configurable redirect endpoint after successful login
 _LOGIN_REDIRECT_ENDPOINT = 'auth.auth_dashboard'
 
-def set_login_redirect(endpoint: str):
+def _set_login_redirect(endpoint: str):
     """
     Sets the endpoint to redirect to after a successful login.
     """
@@ -109,49 +109,30 @@ def password_recovery():
     return render_template('password_recovery.html')
 
 
-@auth_bp.route('/password-reset', methods=['GET', 'POST'])
-def password_reset():
-    """Handles the password reset process after clicking a recovery link."""
+@auth_bp.route('/reset-password/<token>', methods=['GET', 'POST'])
+def pw_reset_token(token):
+    """Verifies a password reset token and handles the reset."""
+    auth_manager = get_auth_manager()
+
     if request.method == 'POST':
-        if session.get('pw_reset_number_access_to_pw_reset', 0) > 0:
-            flash(_t('flash_reset_session_expired'), 'danger')
-            return redirect(url_for('auth.login'))
-
-        session['pw_reset_number_access_to_pw_reset'] = session.get('pw_reset_number_access_to_pw_reset', 0) + 1
-
-        email = session.get('pw_reset_email')
         password = request.form.get('password')
         repassword = request.form.get('repassword')
 
         if password != repassword:
             flash(_t('passwords_not_match'), 'danger')
-            return render_template('password_reset.html')
-
-        auth_manager = get_auth_manager()
+            return render_template('password_reset.html', token=token)
 
         try:
-            auth_manager.reset_password(email, password)
+            auth_manager.reset_password(token, password)
             flash(_t('flash_password_updated'), 'success')
             return redirect(url_for('auth.login'))
         except ValueError as e:
             flash(str(e), 'danger')
+            return render_template('password_reset.html', token=token)
 
-        return render_template('login.html')
-
-    return render_template('password_reset.html')
-
-
-@auth_bp.route('/reset-password/<token>')
-def pw_reset_token(token):
-    """Verifies a password reset token."""
-    auth_manager = get_auth_manager()
-    email = auth_manager.verify_password_reset_token(token)
-
-    if email:
-        session['pw_reset_email'] = email
-        session['pw_reset_number_access_to_pw_reset'] = 0
-        flash(_t('flash_email_verified'), 'success')
-        return redirect(url_for('auth.password_reset'))
+    # GET request: verify token before showing form
+    if auth_manager.verify_password_reset_token(token):
+        return render_template('password_reset.html', token=token)
 
     flash(_t('flash_link_invalid_expired'), 'danger')
     return redirect(url_for('auth.login'))

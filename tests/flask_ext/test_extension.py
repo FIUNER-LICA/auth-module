@@ -1,5 +1,5 @@
 """
-Unit tests for the Flask AuthExtension.
+Unit tests for the Flask FlaskExtension.
 """
 
 import pytest
@@ -9,7 +9,7 @@ from flask import Flask
 from auth_module.core.auth_manager import AuthManager
 from auth_module.core.db.sqlite_repository import SQLiteUserRepository
 from auth_module.core.mail.base import MailDispatcher
-from auth_module.flask_ext.extension import AuthExtension
+from auth_module.flask_ext.extension import FlaskExtension
 
 
 class MockMailDispatcher(MailDispatcher):
@@ -36,7 +36,7 @@ def test_extension_initialization(auth_manager):
     app.config['SESSION_CACHELIB'] = SimpleCache()
 
     # Initialize extension
-    extension = AuthExtension(app, auth_manager)
+    extension = FlaskExtension(app, auth_manager)
 
     # Check that it registers the auth module correctly
     assert 'auth_module' in app.extensions
@@ -54,7 +54,7 @@ def test_extension_i18n_custom_locale(auth_manager):
     app.config['AUTH_FRONTEND_LOCALE'] = 'en'
 
     # Initialize extension with 'en' locale override
-    extension = AuthExtension(app, auth_manager)
+    extension = FlaskExtension(app, auth_manager)
 
     assert extension.i18n.get_locale() == 'en'
     # Test English translation lookup
@@ -74,7 +74,7 @@ def test_extension_i18n_custom_translations(auth_manager):
     }
 
     # Initialize extension with custom translations
-    extension = AuthExtension(app, auth_manager, locale='es', custom_translations=custom_translations)
+    extension = FlaskExtension(app, auth_manager, locale='es', custom_translations=custom_translations)
 
     assert extension.i18n.translate('email') == 'Dirección de Correo'
 

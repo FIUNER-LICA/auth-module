@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "auth-module"
-version = "1.0.0"
+version = "1.1.0"
 description = "A modular authentication package with optional Flask frontend integration."
 readme = "README.md"
 authors = [

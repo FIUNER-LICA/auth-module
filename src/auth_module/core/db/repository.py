@@ -20,7 +20,7 @@ class UserRepository(ABC):
             email (str): The user's email.
 
         Returns:
-            dict[str, any] | None: The user data if found, None otherwise.
+            dict[str, Any] | None: The user data if found, None otherwise.
         """
 
     @abstractmethod

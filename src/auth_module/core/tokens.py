@@ -25,18 +25,18 @@ class TokenManager:
         if not secret_key:
             raise ValueError('secret_key_required')
 
-        self.secret_key = secret_key
+        self.__secret_key = secret_key
 
         if salt is None:
-            self.salt = hmac.new(
+            self.__salt = hmac.new(
                 secret_key.encode('utf-8'),
                 msg=b'auth_module_secure_salt_derivation',
                 digestmod=hashlib.sha256
             ).hexdigest()
         else:
-            self.salt = salt
+            self.__salt = salt
 
-        self.serializer = URLSafeTimedSerializer(self.secret_key)
+        self.__serializer = URLSafeTimedSerializer(self.__secret_key)
 
     def generate_token(self, data: Any) -> str:
         """
@@ -48,7 +48,7 @@ class TokenManager:
         Returns:
             str: The generated token.
         """
-        return self.serializer.dumps(data, salt=self.salt)
+        return self.__serializer.dumps(data, salt=self.__salt)
 
     def confirm_token(self, token: str, expiration_seconds: int = 3600) -> Any | None:
         """
@@ -65,9 +65,9 @@ class TokenManager:
             Unexpected exceptions from itsdangerous or decoding issues are propagated.
         """
         try:
-            data = self.serializer.loads(
+            data = self.__serializer.loads(
                 token,
-                salt=self.salt,
+                salt=self.__salt,
                 max_age=expiration_seconds
             )
             return data

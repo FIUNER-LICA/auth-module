@@ -39,12 +39,12 @@ def test_register_user(auth_manager):
     """Test registering a new user and ensure that the user is created and an email is sent."""
     # Test valid registration
     auth_manager.register_user('test@example.com', 'ValidPass123!')
-    user = auth_manager.user_repository.get_user_by_email('test@example.com')
+    user = auth_manager._AuthManager__user_repository.get_user_by_email('test@example.com')
 
     assert user is not None
     assert user['verified'] is False
-    assert len(auth_manager.mail_dispatcher.sent_emails) == 1
-    assert auth_manager.mail_dispatcher.sent_emails[0]['to'] == 'test@example.com'
+    assert len(auth_manager._AuthManager__mail_dispatcher.sent_emails) == 1
+    assert auth_manager._AuthManager__mail_dispatcher.sent_emails[0]['to'] == 'test@example.com'
 
 def test_register_user_invalid_password(auth_manager):
     """Test registering a user with an invalid password (too short)."""
@@ -63,11 +63,11 @@ def test_verify_user(auth_manager):
 
     # We need to manually generate a token for testing or extract it from the email body
     # Let's just generate one using the internal token manager
-    token = auth_manager.token_manager.generate_token({'email': 'test@example.com', 'purpose': 'verification'})
+    token = auth_manager._AuthManager__token_manager.generate_token({'email': 'test@example.com', 'purpose': 'verification'})
 
     assert auth_manager.verify_user(token) is True
 
-    user = auth_manager.user_repository.get_user_by_email('test@example.com')
+    user = auth_manager._AuthManager__user_repository.get_user_by_email('test@example.com')
     assert user['verified'] is True
 
 def test_authenticate_user(auth_manager):
@@ -79,7 +79,7 @@ def test_authenticate_user(auth_manager):
         auth_manager.authenticate_user('test@example.com', 'ValidPass123!')
 
     # Verify the user
-    token = auth_manager.token_manager.generate_token({'email': 'test@example.com', 'purpose': 'verification'})
+    token = auth_manager._AuthManager__token_manager.generate_token({'email': 'test@example.com', 'purpose': 'verification'})
     auth_manager.verify_user(token)
 
     # Correct credentials
@@ -98,8 +98,8 @@ def test_request_password_recovery(auth_manager):
     auth_manager.request_password_recovery('test@example.com')
 
     # 2 emails sent: 1 for registration, 1 for recovery
-    assert len(auth_manager.mail_dispatcher.sent_emails) == 2
-    assert 'Recovery' in auth_manager.mail_dispatcher.sent_emails[1]['subject'] or 'recuperación' in auth_manager.mail_dispatcher.sent_emails[1]['body'].lower()
+    assert len(auth_manager._AuthManager__mail_dispatcher.sent_emails) == 2
+    assert 'Recovery' in auth_manager._AuthManager__mail_dispatcher.sent_emails[1]['subject'] or 'recuperación' in auth_manager._AuthManager__mail_dispatcher.sent_emails[1]['body'].lower()
 
     # Unregistered email should silently fail or log, but currently it raises ValueError
     with pytest.raises(ValueError, match='No user exists'):
@@ -109,11 +109,14 @@ def test_reset_password(auth_manager):
     """Test resetting a user's password and ensure they can authenticate with the new password."""
     auth_manager.register_user('test@example.com', 'ValidPass123!')
 
+    # Generate a recovery token for the user
+    token = auth_manager._AuthManager__token_manager.generate_token({'email': 'test@example.com', 'purpose': 'recovery'})
+
     # Reset password
-    auth_manager.reset_password('test@example.com', 'NewValidPass123!')
+    auth_manager.reset_password(token, 'NewValidPass123!')
 
     # Verify it was updated (we can check by trying to authenticate if it was verified)
-    token = auth_manager.token_manager.generate_token({'email': 'test@example.com', 'purpose': 'verification'})
+    token = auth_manager._AuthManager__token_manager.generate_token({'email': 'test@example.com', 'purpose': 'verification'})
     auth_manager.verify_user(token)
 
     assert auth_manager.authenticate_user('test@example.com', 'NewValidPass123!') is True
@@ -222,18 +225,21 @@ def test_password_recovery(auth_manager):
         manager.request_password_recovery(email)
 
     manager.register_user(email, 'Pass1234!')
-    manager.user_repository.update_user_verification(email, True)
+    manager._AuthManager__user_repository.update_user_verification(email, True)
 
     # 2. Request recovery
     assert manager.request_password_recovery(email) is True
 
     # 3. Generate token to verify.
-    token = manager.token_manager.generate_token({'email': email, 'purpose': 'recovery'})
+    token = manager._AuthManager__token_manager.generate_token({'email': email, 'purpose': 'recovery'})
 
     # 4. Verify valid token
     assert manager.verify_password_reset_token(token) == email
 
-    # 5. Token marked as used and return None
+    # 5. Reset password to mark token as used
+    manager.reset_password(token, 'NewPass1234!')
+
+    # 6. Verify token is now invalid (used)
     assert manager.verify_password_reset_token(token) is None
 
     # 6. Verify invalid token

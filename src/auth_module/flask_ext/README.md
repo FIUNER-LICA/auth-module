@@ -3,14 +3,14 @@
 Este subpaquete toma la lógica independiente del `AuthManager` y provee una integración completa, lista para usarse, dentro del framework Flask.
 
 ## Inicialización (`extension.py`)
-La integración principal se realiza mediante la clase `AuthExtension`. 
+La integración principal se realiza mediante la clase `FlaskExtension`. 
 Al inicializarla, ésta registra automáticamente el **Blueprint de Autenticación** y los **Manejadores de Errores** necesarios.
 
 ```python
-from auth_module.flask_ext.extension import AuthExtension
+from auth_module.flask_ext.extension import FlaskExtension
 
 # manager = AuthManager(...)
-AuthExtension(app, manager)
+FlaskExtension(app, manager)
 ```
 
 ## Rutas Automáticas
@@ -36,12 +36,12 @@ def dashboard():
 *(El decorador automáticamente redirigirá al usuario a `/auth/login` si no está autenticado).*
 
 ### Redirección Personalizada
-Si deseas que, después de hacer login exitoso, el usuario sea redirigido a una página distinta en lugar del `/` por defecto, puedes configurarlo:
+Si deseas que, después de hacer login exitoso, el usuario sea redirigido a una página distinta en lugar del dashboard por defecto, puedes configurarlo mediante el parámetro `login_redirect_endpoint` durante la inicialización:
 
 ```python
-from auth_module.flask_ext.extension import set_login_redirect
+from auth_module.flask_ext.extension import FlaskExtension
 
-set_login_redirect('/mi-dashboard')
+FlaskExtension(app, manager, login_redirect_endpoint='mi_app.dashboard')
 ```
 
 

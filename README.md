@@ -15,47 +15,25 @@ El módulo provee una base sólida (Core) que gestiona toda la lógica de valida
 
 ## Instalación y Uso en Proyectos Externos
 
-Como este paquete fue diseñado como una librería, la mejor forma de integrarlo en tu proyecto es a través de `pip`, tratándolo como una dependencia local.
+Como este paquete fue diseñado como una librería modular, la forma más práctica de integrarlo en tu proyecto es instalarlo directamente desde GitHub a través de `pip`, referenciando la [última versión estable](https://github.com/FIUNER-LICA/auth-module/releases/latest).
 
-### 1. Clonar el repositorio
-Clona este repositorio dentro del directorio de tu proyecto principal (por ejemplo, dentro de una carpeta llamada `libs/` o `deps/`).
+### Instalar con pip
+Activa el entorno virtual de tu proyecto principal e instala el módulo según tus necesidades.
 
+Instalación Básica (Solo Core, sin Flask) de la versión "v1.1.0":
 ```bash
-mkdir libs
-cd libs
-git clone <https://github.com/FIUNER-LICA/auth-module> auth-module
-```
-
-### 2. Ignorar la carpeta en tu control de versiones
-Es muy importante que agregues esta carpeta al `.gitignore` de tu proyecto principal para no trackear repositorios anidados accidentalmente.
-
-Agrega esto a tu archivo `.gitignore`:
-```text
-# Ignorar dependencias locales
-libs/auth-module/
-# O si usaste deps:
-# deps/auth-module/
-```
-
-### 3. Instalar con pip
-Activa el entorno virtual de tu proyecto principal e instala el módulo.
-
-Instalación Básica (Solo Core, sin Flask):
-```bash
-pip install ./libs/auth-module
+pip install git+https://github.com/FIUNER-LICA/auth-module.git@v1.1.0
 ```
 
 Instalación con Flask (Incluye dependencias web y vistas):
 ```bash
-pip install "./libs/auth-module[flask]"
+pip install "git+https://github.com/FIUNER-LICA/auth-module.git@v1.1.0[flask]"
 ```
 
 Instalación con Flask y OAuth (Funcionalidades web completas):
 ```bash
-pip install "./libs/auth-module[flask,oauth]"
+pip install "git+https://github.com/FIUNER-LICA/auth-module.git@v1.1.0[flask,oauth]"
 ```
-
-*(Nota: Usar la bandera `-e` durante el `pip install` es útil si planeas modificar el código del módulo auth-module y ver los cambios reflejados instantáneamente en tu proyecto).*
 
 ---
 
@@ -94,7 +72,7 @@ Ver el ejemplo completo en: [examples/02_flask_extension/app.py](examples/02_fla
 
 ```python
 from flask import Flask
-from auth_module.flask_ext.extension import AuthExtension
+from auth_module.flask_ext.extension import FlaskExtension
 # ... importar repo y mail_dispatcher ...
 
 app = Flask(__name__)
@@ -108,7 +86,7 @@ manager = AuthManager(
     base_url='http://localhost:5000/auth',
     secret_key=app.config['SECRET_KEY']
 )
-AuthExtension(app, manager)
+FlaskExtension(app, manager)
 
 # El blueprint de /auth ya está registrado y listo para usarse.
 ```
@@ -191,9 +169,8 @@ Integra el Módulo de Autenticación en una aplicación Python para una gestión
 - SmtpMailDispatcher: Para producción. Conecta a servidores SMTP reales.
 
 ### Extensión de Flask (auth_module.flask_ext)
-- AuthExtension(app, manager): Registra automáticamente blueprints, manejadores de error y plantillas.
+- FlaskExtension(app, manager, login_redirect_endpoint): Registra automáticamente blueprints, manejadores de error, plantillas y configura la redirección post-login.
 - @login_required: Decorador para proteger rutas de Flask.
-- set_login_redirect(endpoint): Configura la redirección post-login.
 
 ### Internacionalización y Mensajes (auth_module.core.i18n)
 - I18nManager: Gestiona todos los textos de la interfaz y errores.
@@ -219,12 +196,12 @@ auth_manager.register_user('user@example.com', 'PassSeguro123!')
 
 ## Ejemplo: Integración con Flask
 from flask import Flask
-from auth_module.flask_ext.extension import AuthExtension
+from auth_module.flask_ext.extension import FlaskExtension
 from auth_module.flask_ext.decorators import login_required
 
 app = Flask(__name__)
 # ... inicializar auth_manager ...
-AuthExtension(app, auth_manager)
+FlaskExtension(app, auth_manager)
 
 @app.route('/protegido')
 @login_required
@@ -275,11 +252,11 @@ auth_manager = AuthManager(
 También es posible pasar una función (*callable*) en `locale` para resolver el idioma del backend de manera dinámica en cada petición.
 
 ### 2. Configuración en la Extensión de Flask (Frontend)
-Al instanciar `AuthExtension`, puedes configurar el idioma del frontend (`locale`) y sus traducciones de manera independiente, o controlarlo mediante la configuración de la app de Flask:
+Al instanciar `FlaskExtension`, puedes configurar el idioma del frontend (`locale`) y sus traducciones de manera independiente, o controlarlo mediante la configuración de la app de Flask:
 
 ```python
 # Configuración mediante la inicialización de la extensión
-AuthExtension(
+FlaskExtension(
     app,
     auth_manager,
     locale='es',                      # Idioma del frontend ('es' o 'en', por defecto 'es')
