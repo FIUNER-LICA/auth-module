@@ -15,47 +15,25 @@ The module provides a solid foundation (Core) that handles all password validati
 
 ## Installation and Usage in External Projects
 
-Since this package was designed as a library, the best way to integrate it into your project is through `pip`, treating it as a local dependency.
+Since this package was designed as a modular library, the most practical way to integrate it into your project is to install it directly from GitHub via `pip`, referencing the [latest stable version](https://github.com/FIUNER-LICA/auth-module/releases/latest).
 
-### 1. Clone the repository
-Clone this repository into your main project directory (for example, inside a folder called `libs/` or `deps/`).
+### Install with pip
+Activate your main project's virtual environment and install the module according to your needs.
 
+Basic Installation (Core Only, no Flask) of version "v1.1.0":
 ```bash
-mkdir libs
-cd libs
-git clone <url-to-this-repository> auth-module
-```
-
-### 2. Ignore the folder in your version control
-It is highly important to add this folder to your main project's `.gitignore` to prevent accidentally tracking nested repositories.
-
-Add this to your `.gitignore` file:
-```text
-# Ignore local dependencies
-libs/auth-module/
-# Or if you used deps:
-# deps/auth-module/
-```
-
-### 3. Install with pip
-Activate your main project's virtual environment and install the module.
-
-Basic Installation (Core Only, no Flask):
-```bash
-pip install ./libs/auth-module
+pip install git+https://github.com/FIUNER-LICA/auth-module.git@v1.1.0
 ```
 
 Flask Installation (Includes web dependencies and views):
 ```bash
-pip install "./libs/auth-module[flask]"
+pip install "git+https://github.com/FIUNER-LICA/auth-module.git@v1.1.0[flask]"
 ```
 
 Complete Installation (Includes optional dependencies like Flask and OAuth):
 ```bash
-pip install "./libs/auth-module[flask,oauth]"
+pip install "git+https://github.com/FIUNER-LICA/auth-module.git@v1.1.0[flask,oauth]"
 ```
-
-*(Note: Using the `-e` flag during `pip install` is useful if you plan on modifying the auth-module code and want to see the changes reflected instantly in your project).*
 
 ---
 
