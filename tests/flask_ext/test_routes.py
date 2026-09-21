@@ -9,8 +9,7 @@ from flask import Flask
 from auth_module.core.auth_manager import AuthManager
 from auth_module.core.db.sqlite_repository import SQLiteUserRepository
 from auth_module.core.mail.base import MailDispatcher
-from auth_module.flask_ext.extension import AuthExtension
-from auth_module.flask_ext.routes import set_login_redirect
+from auth_module.flask_ext.extension import FlaskExtension
 
 
 class MockMailDispatcher(MailDispatcher):
@@ -38,8 +37,7 @@ def test_client(tmp_path):
         secret_key='test_secret_key'
     )
 
-    AuthExtension(app, auth_manager)
-    set_login_redirect('dummy_dashboard')
+    FlaskExtension(app, auth_manager, login_redirect_endpoint='dummy_dashboard')
 
     @app.route('/dummy')
     def dummy_dashboard():

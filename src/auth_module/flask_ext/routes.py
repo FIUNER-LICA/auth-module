@@ -26,7 +26,7 @@ auth_bp = Blueprint(
 # Configurable redirect endpoint after successful login
 _LOGIN_REDIRECT_ENDPOINT = 'auth.auth_dashboard'
 
-def set_login_redirect(endpoint: str):
+def _set_login_redirect(endpoint: str):
     """
     Sets the endpoint to redirect to after a successful login.
     """

@@ -94,7 +94,7 @@ See the full example at: [examples/02_flask_extension/app.py](examples/02_flask_
 
 ```python
 from flask import Flask
-from auth_module.flask_ext.extension import AuthExtension
+from auth_module.flask_ext.extension import FlaskExtension
 # ... import repo and mail_dispatcher ...
 
 app = Flask(__name__)
@@ -108,7 +108,7 @@ manager = AuthManager(
     base_url='http://localhost:5000/auth',
     secret_key=app.config['SECRET_KEY']
 )
-AuthExtension(app, manager)
+FlaskExtension(app, manager)
 
 # The /auth blueprint is now registered and ready to use.
 ```
@@ -191,9 +191,8 @@ Integrate Authentication Module into a Python application for robust, framework-
 - SmtpMailDispatcher: For production. Connects to real SMTP servers.
 
 ### Flask Extension (auth_module.flask_ext)
-- AuthExtension(app, manager): Automatically registers blueprints, error handlers, and templates.
+- FlaskExtension(app, manager, login_redirect_endpoint): Automatically registers blueprints, error handlers, templates and configures post-login redirection.
 - @login_required: Decorator to protect Flask routes.
-- set_login_redirect(endpoint): Configure post-login redirection.
 
 ### Internationalization & Messages (auth_module.core.i18n)
 - I18nManager: Manages all UI and error texts.
@@ -219,12 +218,12 @@ auth_manager.register_user('user@example.com', 'SecurePass123!')
 
 ## Example: Flask Integration
 from flask import Flask
-from auth_module.flask_ext.extension import AuthExtension
+from auth_module.flask_ext.extension import FlaskExtension
 from auth_module.flask_ext.decorators import login_required
 
 app = Flask(__name__)
 # ... initialize auth_manager ...
-AuthExtension(app, auth_manager)
+FlaskExtension(app, auth_manager)
 
 @app.route('/protected')
 @login_required
@@ -273,11 +272,11 @@ auth_manager = AuthManager(
 You can also pass a *callable* function in `locale` to resolve the backend language dynamically per request.
 
 ### 2. Flask Extension (Frontend) Configuration
-When instantiating `AuthExtension`, you can configure the frontend language (`locale`) and its translations independently, or control them via the Flask app configuration:
+When instantiating `FlaskExtension`, you can configure the frontend language (`locale`) and its translations independently, or control them via the Flask app configuration:
 
 ```python
 # Configuration via extension initialization
-AuthExtension(
+FlaskExtension(
     app,
     auth_manager,
     locale='es',                      # Frontend locale ('es' or 'en', defaults to 'es')

@@ -22,10 +22,10 @@ The backend keys (defined in `BACKEND_TRANSLATIONS`) cover the deepest messages 
 ## Injecting Custom Translations
 Following best practices, you should **never** modify the internal files to change a translation or add a new language (such as French `fr`).
 
-The manager is prepared to receive a dictionary called `custom_translations` upon initialization of the upper managers (either `AuthManager` or `AuthExtension`). Any injected dictionary will be merged into the in-memory configuration, seamlessly overriding existing keys and adding new languages automatically.
+The manager is prepared to receive a dictionary called `custom_translations` upon initialization of the upper managers (either `AuthManager` or `FlaskExtension`). Any injected dictionary will be merged into the in-memory configuration, seamlessly overriding existing keys and adding new languages automatically.
 
 ## Implementation Examples
-Initialize the `AuthManager` or `AuthExtension` with the `custom_translations` parameter to override or add new translations. For example:
+Initialize the `AuthManager` or `FlaskExtension` with the `custom_translations` parameter to override or add new translations. For example:
 ```python
 # Custom translations for the backend
 custom_backend_translations = {

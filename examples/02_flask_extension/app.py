@@ -2,7 +2,7 @@
 Example 02: Flask Extension Usage.
 
 This example demonstrates how to integrate the auth-module into a Flask application
-using the provided AuthExtension and blueprints.
+using the provided FlaskExtension and blueprints.
 """
 
 import os
@@ -13,8 +13,7 @@ from auth_module.core.auth_manager import AuthManager
 from auth_module.core.db.sqlite_repository import SQLiteUserRepository
 from auth_module.core.mail.console_dispatcher import ConsoleMailDispatcher
 from auth_module.flask_ext.decorators import login_required
-from auth_module.flask_ext.extension import AuthExtension
-from auth_module.flask_ext.routes import set_login_redirect
+from auth_module.flask_ext.extension import FlaskExtension
 
 
 def create_app() -> Flask:
@@ -46,10 +45,8 @@ def create_app() -> Flask:
 
     # 3. Initialize the Flask extension
     # This automatically registers the '/auth' blueprint and configures the session
-    AuthExtension(app, auth_manager)
-
-    # Optional: Change where the user goes after a successful login
-    set_login_redirect('dashboard')
+    # We pass login_redirect_endpoint to configure where the user is redirected to after a successful login
+    FlaskExtension(app, auth_manager, login_redirect_endpoint='dashboard')
 
     # 4. Define application routes
     @app.route('/')

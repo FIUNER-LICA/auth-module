@@ -14,7 +14,7 @@ from auth_module.core.db.sqlite_repository import SQLiteUserRepository
 from auth_module.core.mail.console_dispatcher import ConsoleMailDispatcher
 from auth_module.core.security.password import PasswordPolicy, PasswordPolicyConfig
 from auth_module.core.security.rules import LengthPasswordRule, RegexPasswordRule
-from auth_module.flask_ext.extension import AuthExtension
+from auth_module.flask_ext.extension import FlaskExtension
 
 
 def create_app() -> Flask:
@@ -62,7 +62,7 @@ def create_app() -> Flask:
     )
 
     # Initialize the extension
-    AuthExtension(app, auth_manager)
+    FlaskExtension(app, auth_manager)
 
     @app.route('/')
     def index():
