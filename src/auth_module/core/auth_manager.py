@@ -223,21 +223,20 @@ class AuthManager:
         )
         return self.__user_repository.get_user_by_email(email)
 
-    def request_password_recovery(self, email: str) -> bool:
+    def request_password_recovery(self, email: str) -> None:
         """
         Initiates a password recovery process and sends a recovery email.
 
         Args:
             email (str): The user's email.
 
-        Returns:
-            bool: True if the email was successfully sent.
-
-        Raises:
-            ValueError: If the user does not exist.
+        Note:
+            To prevent user enumeration attacks, this method always returns None
+            and executes silently even if the email does not exist in the database.
         """
         if not self.__user_repository.get_user_by_email(email):
-            raise ValueError(self.__i18n.translate('no_user_with_email'))
+            # Return silently to prevent user enumeration
+            return
 
         token = self.__token_manager.generate_token({'email': email, 'purpose': 'recovery'})
         recovery_url = f'{self.__base_url}/reset-password/{token}'
@@ -247,7 +246,6 @@ class AuthManager:
             subject=self.__i18n.translate('password_recovery_subject'),
             body=self.__i18n.translate('password_recovery_body', url=recovery_url)
         )
-        return True
 
     def set_locale(self, locale: str) -> None:
         """Sets the locale for the backend translator."""

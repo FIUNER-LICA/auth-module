@@ -101,9 +101,8 @@ def test_request_password_recovery(auth_manager):
     assert len(auth_manager._AuthManager__mail_dispatcher.sent_emails) == 2
     assert 'Recovery' in auth_manager._AuthManager__mail_dispatcher.sent_emails[1]['subject'] or 'recuperación' in auth_manager._AuthManager__mail_dispatcher.sent_emails[1]['body'].lower()
 
-    # Unregistered email should silently fail or log, but currently it raises ValueError
-    with pytest.raises(ValueError, match='No user exists'):
-        auth_manager.request_password_recovery('nobody@example.com')
+    # Unregistered email should silently return None to prevent user enumeration
+    assert auth_manager.request_password_recovery('nobody@example.com') is None
 
 def test_reset_password(auth_manager):
     """Test resetting a user's password and ensure they can authenticate with the new password."""
@@ -220,15 +219,14 @@ def test_password_recovery(auth_manager):
     manager = auth_manager
     email = 'recover@example.com'
 
-    # 1. User must exist
-    with pytest.raises(ValueError):
-        manager.request_password_recovery(email)
+    # 1. User must exist (but now it returns silently)
+    assert manager.request_password_recovery(email) is None
 
     manager.register_user(email, 'Pass1234!')
     manager._AuthManager__user_repository.update_user_verification(email, True)
 
-    # 2. Request recovery
-    assert manager.request_password_recovery(email) is True
+    # 2. Request recovery (returns None)
+    assert manager.request_password_recovery(email) is None
 
     # 3. Generate token to verify.
     token = manager._AuthManager__token_manager.generate_token({'email': email, 'purpose': 'recovery'})
