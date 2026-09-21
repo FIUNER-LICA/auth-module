@@ -45,6 +45,7 @@ FRONTEND_TRANSLATIONS = {
     'en': {
         'title': 'Authentication',
         'header_title': 'Authentication',
+        'login_title': 'Sign In',
         'email': 'Email Address',
         'password': 'Password',
         'login_button': 'Sign In',
@@ -92,6 +93,7 @@ FRONTEND_TRANSLATIONS = {
     'es': {
         'title': 'Autenticación',
         'header_title': 'Autenticación',
+        'login_title': 'Iniciar Sesión',
         'email': 'Correo electrónico',
         'password': 'Contraseña',
         'login_button': 'Iniciar sesión',
