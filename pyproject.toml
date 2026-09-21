@@ -28,6 +28,7 @@ flask = [
     "Flask-Mail>=0.10.0",
     "Flask-Session>=0.8.0",
     "Flask-WTF>=1.3.0",
+    "email-validator>=2.3.0",
 ]
 oauth = [
     "blinker>=1.9.0",
