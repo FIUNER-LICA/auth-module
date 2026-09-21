@@ -98,22 +98,23 @@ class AuthManager:
         )
         return True
 
-    def reset_password(self, email: str, password: str) -> bool:
+    def reset_password(self, token: str, password: str) -> bool:
         """
-        Resets the password for an existing user.
+        Resets the password for an existing user using a recovery token.
 
         Args:
-            email (str): The user's email.
+            token (str): The recovery token.
             password (str): The new plain text password.
 
         Returns:
             bool: True if password reset was successful.
 
         Raises:
-            ValueError: If the user does not exist or password is invalid.
+            ValueError: If the token is invalid or password policy fails.
         """
-        if not self.__user_repository.get_user_by_email(email):
-            raise ValueError(self.__i18n.translate('user_not_exists'))
+        email = self.verify_password_reset_token(token)
+        if not email:
+            raise ValueError(self.__i18n.translate('flash_link_invalid_expired'))
 
         is_valid_pwd, pwd_msg = self.__password_policy.validate(password, i18n_manager=self.__i18n)
         if not is_valid_pwd:
@@ -121,6 +122,7 @@ class AuthManager:
 
         pwd_hash = self.__password_hasher.hash(password)
         self.__user_repository.update_user_password(email, pwd_hash)
+        self.__used_pw_reset_tokens.add(token)
         return True
 
     def verify_user(self, token: str) -> bool:
@@ -166,15 +168,7 @@ class AuthManager:
         email = data.get('email')
         user = self.__user_repository.get_user_by_email(email) if email else None
 
-        if token in self.__used_pw_reset_tokens and user:
-            return None
-
-        self.__used_pw_reset_tokens.add(token)
-
-        if token in self.__used_pw_reset_tokens and not user:
-            self.__used_pw_reset_tokens.remove(token)
-
-        if not user:
+        if token in self.__used_pw_reset_tokens or not user:
             return None
 
         return email

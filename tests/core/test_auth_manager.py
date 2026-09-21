@@ -109,8 +109,11 @@ def test_reset_password(auth_manager):
     """Test resetting a user's password and ensure they can authenticate with the new password."""
     auth_manager.register_user('test@example.com', 'ValidPass123!')
 
+    # Generate a recovery token for the user
+    token = auth_manager._AuthManager__token_manager.generate_token({'email': 'test@example.com', 'purpose': 'recovery'})
+
     # Reset password
-    auth_manager.reset_password('test@example.com', 'NewValidPass123!')
+    auth_manager.reset_password(token, 'NewValidPass123!')
 
     # Verify it was updated (we can check by trying to authenticate if it was verified)
     token = auth_manager._AuthManager__token_manager.generate_token({'email': 'test@example.com', 'purpose': 'verification'})
@@ -233,7 +236,10 @@ def test_password_recovery(auth_manager):
     # 4. Verify valid token
     assert manager.verify_password_reset_token(token) == email
 
-    # 5. Token marked as used and return None
+    # 5. Reset password to mark token as used
+    manager.reset_password(token, 'NewPass1234!')
+
+    # 6. Verify token is now invalid (used)
     assert manager.verify_password_reset_token(token) is None
 
     # 6. Verify invalid token
