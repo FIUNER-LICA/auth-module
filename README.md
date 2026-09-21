@@ -291,9 +291,9 @@ app.config['AUTH_FRONTEND_LOCALE'] = 'en'  # Sobrescribe el idioma de las planti
 
 El proyecto cuenta con pruebas automáticas bajo la carpeta [tests/](tests). Para correrlas todas, primero debes instalar las dependencias de desarrollo (definidas en el grupo `dev` en `pyproject.toml` según el estándar [PEP 735](https://peps.python.org/pep-0735/)):
 
-Si usas **uv**:
+Si usas **uv**, puedes sincronizar todas las dependencias (incluidas las opcionales y de desarrollo) ejecutando:
 ```bash
-uv sync --group dev
+uv sync --all-extras
 ```
 
 Si usas **pip** (requiere `pip >= 25.1`):

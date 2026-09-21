@@ -289,9 +289,9 @@ app.config['AUTH_FRONTEND_LOCALE'] = 'en'  # Overrides the templates and flash m
 
 The project is fully covered by automated tests under the [tests/](tests) folder. To run them, you first need to install the development dependencies (defined in the `dev` group of `pyproject.toml` under the [PEP 735](https://peps.python.org/pep-0735/) standard):
 
-If using **uv**:
+If using **uv**, you can sync all dependencies (including optional extras and development tools) by running:
 ```bash
-uv sync --group dev
+uv sync --all-extras
 ```
 
 If using **pip** (requires `pip >= 25.1`):
