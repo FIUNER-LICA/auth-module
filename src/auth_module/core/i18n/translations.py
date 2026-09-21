@@ -87,6 +87,7 @@ FRONTEND_TRANSLATIONS = {
         'flash_login_successful': 'Login successful.',
         'flash_incorrect_credentials': 'Incorrect email or password.',
         'flash_logged_out': 'You have logged out.',
+        'passwords_not_match': 'Passwords must match.',
     },
     'es': {
         'title': 'Módulo de registro de usuarios e inicio de sesión',
@@ -133,5 +134,6 @@ FRONTEND_TRANSLATIONS = {
         'flash_login_successful': 'Inicio de sesión correcto.',
         'flash_incorrect_credentials': 'Correo electrónico o contraseña incorrectos.',
         'flash_logged_out': 'Has cerrado sesión.',
+        'passwords_not_match': 'Las contraseñas no coinciden.',
     }
 }

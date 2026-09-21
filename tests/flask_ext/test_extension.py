@@ -34,6 +34,7 @@ def test_extension_initialization(auth_manager):
     app.config['SECRET_KEY'] = 'test'
     app.config['SESSION_TYPE'] = 'cachelib'
     app.config['SESSION_CACHELIB'] = SimpleCache()
+    app.config['WTF_CSRF_ENABLED'] = False
 
     # Initialize extension
     extension = FlaskExtension(app, auth_manager)

@@ -14,6 +14,7 @@ from flask import (
 )
 
 from .decorators import login_required
+from .forms import LoginForm, PasswordRecoveryForm, PasswordResetForm, RegisterForm
 
 # Create a blueprint with template and static folders configured to point to this package's folders
 auth_bp = Blueprint(
@@ -62,6 +63,13 @@ def inject_i18n():
     return {'t': _t}
 
 
+def _flash_form_errors(form):
+    """Flashes WTForms validation errors."""
+    for errors in form.errors.values():
+        for error in errors:
+            flash(_t(error), 'danger')
+
+
 @auth_bp.route('/home')
 def home():
     """Redirects to the index page."""
@@ -71,68 +79,70 @@ def home():
 @auth_bp.route('/register', methods=['GET', 'POST'])
 def register():
     """Handles user registration."""
+    form = RegisterForm()
+
     if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
-        repassword = request.form.get('repassword')
+        if form.validate_on_submit():
+            email = form.email.data
+            password = form.password.data
+            auth_manager = get_auth_manager()
+            try:
+                auth_manager.register_user(email, password)
+                flash(_t('flash_check_email_verify'), 'success')
+                return redirect(url_for('auth.login'))
+            except ValueError as e:
+                flash(str(e), 'danger')
 
-        if password != repassword:
-            flash(_t('passwords_not_match'), 'danger')
-            return render_template('register.html')
-        auth_manager = get_auth_manager()
-        try:
-            auth_manager.register_user(email, password)
-            flash(_t('flash_check_email_verify'), 'success')
-            return redirect(url_for('auth.login'))
-        except ValueError as e:
-            flash(str(e), 'danger')
+        else:
+            _flash_form_errors(form)
 
-    return render_template('register.html')
+    return render_template('register.html', form=form)
 
 
 @auth_bp.route('/password-recovery', methods=['GET', 'POST'])
 def password_recovery():
     """Handles password recovery requests."""
-    if request.method == 'POST':
-        email = request.form.get('email')
-        auth_manager = get_auth_manager()
+    form = PasswordRecoveryForm()
 
-        try:
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            email = form.email.data
+            auth_manager = get_auth_manager()
+
             auth_manager.request_password_recovery(email)
             flash(_t('flash_recovery_link_sent'), 'info')
-        except ValueError as e:
-            flash(str(e), 'danger')
             return redirect(url_for('auth.login'))
 
-        return render_template('password_recovery.html')
+        else:
+            _flash_form_errors(form)
 
-    return render_template('password_recovery.html')
+    return render_template('password_recovery.html', form=form)
 
 
 @auth_bp.route('/reset-password/<token>', methods=['GET', 'POST'])
 def pw_reset_token(token):
     """Verifies a password reset token and handles the reset."""
     auth_manager = get_auth_manager()
+    form = PasswordResetForm()
 
     if request.method == 'POST':
-        password = request.form.get('password')
-        repassword = request.form.get('repassword')
+        if form.validate_on_submit():
+            password = form.password.data
 
-        if password != repassword:
-            flash(_t('passwords_not_match'), 'danger')
-            return render_template('password_reset.html', token=token)
+            try:
+                auth_manager.reset_password(token, password)
+                flash(_t('flash_password_updated'), 'success')
+                return redirect(url_for('auth.login'))
+            except ValueError as e:
+                flash(str(e), 'danger')
+                return render_template('password_reset.html', token=token, form=form)
 
-        try:
-            auth_manager.reset_password(token, password)
-            flash(_t('flash_password_updated'), 'success')
-            return redirect(url_for('auth.login'))
-        except ValueError as e:
-            flash(str(e), 'danger')
-            return render_template('password_reset.html', token=token)
+        else:
+            _flash_form_errors(form)
 
     # GET request: verify token before showing form
     if auth_manager.verify_password_reset_token(token):
-        return render_template('password_reset.html', token=token)
+        return render_template('password_reset.html', token=token, form=form)
 
     flash(_t('flash_link_invalid_expired'), 'danger')
     return redirect(url_for('auth.login'))
@@ -154,23 +164,29 @@ def verify(token):
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     """Handles user login."""
+    form = LoginForm()
+
     if request.method == 'POST':
-        email = request.form.get('email')
-        password = request.form.get('password')
+        if form.validate_on_submit():
+            email = form.email.data
+            password = form.password.data
 
-        auth_manager = get_auth_manager()
+            auth_manager = get_auth_manager()
 
-        try:
-            if auth_manager.authenticate_user(email, password):
-                session['email'] = email
-                flash(_t('flash_login_successful'), 'success')
-                return redirect(url_for(_LOGIN_REDIRECT_ENDPOINT))
+            try:
+                if auth_manager.authenticate_user(email, password):
+                    session['email'] = email
+                    flash(_t('flash_login_successful'), 'success')
+                    return redirect(url_for(_LOGIN_REDIRECT_ENDPOINT))
 
-            flash(_t('flash_incorrect_credentials'), 'danger')
-        except ValueError as e:
-            flash(str(e), 'warning')
+                flash(_t('flash_incorrect_credentials'), 'danger')
+            except ValueError as e:
+                flash(str(e), 'warning')
 
-    return render_template('login.html')
+        else:
+            _flash_form_errors(form)
+
+    return render_template('login.html', form=form)
 
 
 @auth_bp.route('/logout')

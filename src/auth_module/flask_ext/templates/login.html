@@ -2,17 +2,18 @@
 
 {% block content %}
 <form method="post" action="{{ url_for('auth.login') }}">
+  {{ form.hidden_tag() }}
   <div class="mb-3">
     <label for="email" class="form-label">{{ t('email') }}</label>
-    <input type="email" class="form-control" id="email" name="email" autocomplete="email" required>
+    {{ form.email(class="form-control", id="email", autocomplete="email") }}
   </div>
 
   <div class="mb-3">
     <label for="password" class="form-label">{{ t('password') }}</label>
-    <input type="password" class="form-control" id="password" name="password" autocomplete="current-password" required>
+    {{ form.password(class="form-control", id="password", autocomplete="current-password") }}
   </div>
 
-  <button type="submit" class="btn btn-primary w-100">{{ t('login_button') }}</button>
+  {{ form.submit(class="btn btn-primary w-100", value=t('login_button')) }}
 </form>
 
 <p class="mt-3 text-center">{{ t('no_account_question') }} <a href="{{ url_for('auth.register') }}">{{ t('register_here') }}</a></p>
