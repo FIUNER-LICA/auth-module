@@ -193,6 +193,7 @@ def login():
 def logout():
     """Handles user logout."""
     session.pop('email', None)
+    session.pop('_flashes', None)
     flash(_t('flash_logged_out'), 'info')
     return redirect(url_for('auth.login'))
 
