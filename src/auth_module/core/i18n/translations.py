@@ -43,8 +43,8 @@ BACKEND_TRANSLATIONS = {
 
 FRONTEND_TRANSLATIONS = {
     'en': {
-        'title': 'User Registration and Login Module',
-        'header_title': 'User Registration and Login Module',
+        'title': 'Authentication',
+        'header_title': 'Authentication',
         'email': 'Email Address',
         'password': 'Password',
         'login_button': 'Sign In',
@@ -90,8 +90,8 @@ FRONTEND_TRANSLATIONS = {
         'passwords_not_match': 'Passwords must match.',
     },
     'es': {
-        'title': 'Módulo de registro de usuarios e inicio de sesión',
-        'header_title': 'Módulo de registro de usuarios e inicio de sesión',
+        'title': 'Autenticación',
+        'header_title': 'Autenticación',
         'email': 'Correo electrónico',
         'password': 'Contraseña',
         'login_button': 'Iniciar sesión',
