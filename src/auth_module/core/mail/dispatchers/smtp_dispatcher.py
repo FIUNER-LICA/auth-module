@@ -2,10 +2,10 @@
 Implementation of the email dispatcher using the 'sender' library.
 """
 
-from sender import Attachment, Mail, Message
+from sender import Mail, Message
 
+from ..config import AbsEmailServerConfig
 from .base import MailDispatcher
-from .config import AbsEmailServerConfig
 
 
 class SmtpMailDispatcher(MailDispatcher):
@@ -42,29 +42,19 @@ class SmtpMailDispatcher(MailDispatcher):
             use_tls=mail_use_tls
         )
 
-    def send(self, to_email: str, subject: str, body: str, logo_image_file: str | None = None) -> None:
+    def send(self, to_email: str, subject: str, body: str) -> None:
         """
         Sends an email.
 
         Args:
             to_email (str): Recipient email address.
             subject (str): Email subject.
-            body (str): Email body (HTML or plain text).
-            logo_image_file (str | None): Optional path to an image attachment.
+            body (str): Email body (HTML).
         """
         if not self._mail:
             raise RuntimeError('SmtpMailDispatcher has not been initialized.')
 
         html = body
         msg = Message(subject=subject, to=to_email, html=html)
-
-        if logo_image_file is not None:
-            filename = logo_image_file.split('/')[-1]
-            if '\\' in filename:
-                filename = filename.split('\\')[-1]
-
-            with open(logo_image_file, mode='rb') as f:
-                attachment = Attachment(filename, 'image/jpeg', f.read())
-            msg.attach(attachment)
 
         self._mail.send(msg)

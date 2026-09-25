@@ -8,12 +8,12 @@ from flask import Flask
 
 from auth_module.core.auth_manager import AuthManager
 from auth_module.core.db.sqlite_repository import SQLiteUserRepository
-from auth_module.core.mail.base import MailDispatcher
+from auth_module.core.mail.dispatchers.base import MailDispatcher
 from auth_module.flask_ext.extension import FlaskExtension
 
 
 class MockMailDispatcher(MailDispatcher):
-    def send(self, to_email: str, subject: str, body: str, logo_image_file: str | None = None) -> bool:
+    def send(self, to_email: str, subject: str, body: str) -> bool:
         return True
 
 

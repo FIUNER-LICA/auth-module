@@ -3,7 +3,7 @@
 The mail package handles all outgoing communication with the user (account verification and password recovery).
 
 ## Abstract Interface (`base.py`)
-All mail dispatching classes implement the abstract `MailDispatcher` class, which defines the `send(to_email, subject, body, logo_image_file) -> None` method. 
+All mail dispatching classes implement the abstract `MailDispatcher` class, which defines the `send(to_email, subject, body) -> None` method. 
 In this method, if any critical failure or impediment occurs during dispatch (such as invalid credentials or a rejected connection), the implementation will raise an exception. This allows swapping providers (SendGrid, AWS SES, SMTP, Console) completely transparently without modifying the orchestration flow or error handling in the `AuthManager`.
 
 ## Included Dispatchers
@@ -27,7 +27,7 @@ It is configured via the `EmailEnvConfig` class, which expects the following env
 **Usage:**
 ```python
 from auth_module.core.mail.config import EmailEnvConfig
-from auth_module.core.mail.smtp_dispatcher import SmtpMailDispatcher
+from auth_module.core.mail.dispatchers import SmtpMailDispatcher
 
 # Will automatically load values from the system/.env file
 config = EmailEnvConfig()

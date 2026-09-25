@@ -9,7 +9,6 @@ BACKEND_TRANSLATIONS = {
         'user_exists': 'User already exists',
         'user_not_exists': 'User does not exist',
         'email_not_verified': 'Email is not verified',
-        'no_user_with_email': 'No user exists with that email',
         'db_path_required': 'A db_path must be provided to initialize the SQLite repository.',
         'confirm_email_subject': 'Confirm your account',
         'confirm_email_body': 'Please confirm your email by clicking here: {url}',
@@ -28,7 +27,6 @@ BACKEND_TRANSLATIONS = {
         'user_exists': 'El usuario ya existe',
         'user_not_exists': 'El usuario no existe',
         'email_not_verified': 'El correo electrónico no está verificado',
-        'no_user_with_email': 'No existe ningún usuario con ese correo electrónico',
         'db_path_required': 'Se debe proporcionar un db_path para inicializar el repositorio SQLite.',
         'confirm_email_subject': 'Confirma tu cuenta',
         'confirm_email_body': 'Por favor confirma tu correo haciendo clic aquí: {url}',
@@ -45,8 +43,9 @@ BACKEND_TRANSLATIONS = {
 
 FRONTEND_TRANSLATIONS = {
     'en': {
-        'title': 'User Registration and Login Module',
-        'header_title': 'User Registration and Login Module',
+        'title': 'Authentication',
+        'header_title': 'Authentication',
+        'login_title': 'Sign In',
         'email': 'Email Address',
         'password': 'Password',
         'login_button': 'Sign In',
@@ -80,7 +79,7 @@ FRONTEND_TRANSLATIONS = {
         'verify_email_title': 'Email Verification',
         'go_to_login': 'Go to Login',
         'flash_check_email_verify': 'Please check your email to verify your account.',
-        'flash_recovery_link_sent': 'If the email exists, a recovery link has been sent.',
+        'flash_recovery_link_sent': 'If the email is registered, a recovery link has been sent to reset your password.',
         'flash_reset_session_expired': 'Password reset session expired.',
         'flash_password_updated': 'Password updated successfully.',
         'flash_email_verified': 'Email verified. You can now set your new password.',
@@ -89,10 +88,12 @@ FRONTEND_TRANSLATIONS = {
         'flash_login_successful': 'Login successful.',
         'flash_incorrect_credentials': 'Incorrect email or password.',
         'flash_logged_out': 'You have logged out.',
+        'passwords_not_match': 'Passwords must match.',
     },
     'es': {
-        'title': 'Módulo de registro de usuarios e inicio de sesión',
-        'header_title': 'Módulo de registro de usuarios e inicio de sesión',
+        'title': 'Autenticación',
+        'header_title': 'Autenticación',
+        'login_title': 'Iniciar Sesión',
         'email': 'Correo electrónico',
         'password': 'Contraseña',
         'login_button': 'Iniciar sesión',
@@ -126,7 +127,7 @@ FRONTEND_TRANSLATIONS = {
         'verify_email_title': 'Verificación de correo',
         'go_to_login': 'Ir al login',
         'flash_check_email_verify': 'Por favor, revisa tu correo electrónico para verificar tu cuenta.',
-        'flash_recovery_link_sent': 'Si el correo existe, se ha enviado un enlace de recuperación.',
+        'flash_recovery_link_sent': 'Si el correo ingresado se encuentra registrado, se ha enviado un enlace para restablecer tu contraseña.',
         'flash_reset_session_expired': 'La sesión de restablecimiento de contraseña ha expirado.',
         'flash_password_updated': 'Contraseña actualizada correctamente.',
         'flash_email_verified': 'Correo electrónico verificado. Ahora puedes establecer tu nueva contraseña.',
@@ -135,5 +136,6 @@ FRONTEND_TRANSLATIONS = {
         'flash_login_successful': 'Inicio de sesión correcto.',
         'flash_incorrect_credentials': 'Correo electrónico o contraseña incorrectos.',
         'flash_logged_out': 'Has cerrado sesión.',
+        'passwords_not_match': 'Las contraseñas no coinciden.',
     }
 }
