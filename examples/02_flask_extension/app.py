@@ -11,7 +11,7 @@ from flask import Flask
 
 from auth_module.core.auth_manager import AuthManager
 from auth_module.core.db.sqlite_repository import SQLiteUserRepository
-from auth_module.core.mail.console_dispatcher import ConsoleMailDispatcher
+from auth_module.core.mail.dispatchers import ConsoleMailDispatcher
 from auth_module.flask_ext.decorators import login_required
 from auth_module.flask_ext.extension import FlaskExtension
 

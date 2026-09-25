@@ -5,7 +5,7 @@ import pytest
 
 from auth_module.core.auth_manager import AuthManager
 from auth_module.core.db.sqlite_repository import SQLiteUserRepository
-from auth_module.core.mail.base import MailDispatcher
+from auth_module.core.mail.dispatchers.base import MailDispatcher
 
 
 class MockMailDispatcher(MailDispatcher):
@@ -14,7 +14,7 @@ class MockMailDispatcher(MailDispatcher):
     def __init__(self):
         self.sent_emails = []
 
-    def send(self, to_email: str, subject: str, body: str, logo_image_file: str | None = None) -> bool:
+    def send(self, to_email: str, subject: str, body: str) -> bool:
         self.sent_emails.append({'to': to_email, 'subject': subject, 'body': body})
         return True
 

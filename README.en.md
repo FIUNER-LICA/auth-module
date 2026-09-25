@@ -47,7 +47,7 @@ See the full example at: [examples/01_core_backend/main.py](examples/01_core_bac
 ```python
 from auth_module.core.auth_manager import AuthManager
 from auth_module.core.db.sqlite_repository import SQLiteUserRepository
-from auth_module.core.mail.console_dispatcher import ConsoleMailDispatcher
+from auth_module.core.mail.dispatchers import ConsoleMailDispatcher
 
 # 1. Database
 repo = SQLiteUserRepository(db_path='/absolute/path/users.db')
@@ -164,9 +164,9 @@ Integrate Authentication Module into a Python application for robust, framework-
 - PasswordHasher: Uses `WerkzeugPasswordHasher` by default (scrypt).
 
 ### Mail Dispatching (auth_module.core.mail)
-- MailBase: Abstract interface for sending emails.
-- ConsoleMailDispatcher: For local development. Prints emails to stdout.
-- SmtpMailDispatcher: For production. Connects to real SMTP servers.
+- MailDispatcher (in `dispatchers/base.py`): Abstract interface for sending emails that allows dynamic HTML injection.
+- ConsoleMailDispatcher (in `dispatchers/`): For local development. Prints emails to stdout.
+- SmtpMailDispatcher (in `dispatchers/`): For production. Connects to real SMTP servers.
 
 ### Flask Extension (auth_module.flask_ext)
 - FlaskExtension(app, manager, login_redirect_endpoint): Automatically registers blueprints, error handlers, templates and configures post-login redirection.
@@ -182,7 +182,7 @@ The core logic requires dependency injection. You must provide a mail dispatcher
 ## Example: Core Backend Usage (Python)
 from auth_module.core.auth_manager import AuthManager
 from auth_module.core.db.sqlite_repository import SQLiteUserRepository
-from auth_module.core.mail.console_dispatcher import ConsoleMailDispatcher
+from auth_module.core.mail.dispatchers import ConsoleMailDispatcher
 
 repo = SQLiteUserRepository(db_path='./users.db')
 mail = ConsoleMailDispatcher()

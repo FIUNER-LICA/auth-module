@@ -2,7 +2,7 @@
 Unit tests for the ConsoleMailDispatcher.
 """
 
-from auth_module.core.mail.console_dispatcher import ConsoleMailDispatcher
+from auth_module.core.mail.dispatchers import ConsoleMailDispatcher
 
 
 def test_console_mail_dispatcher(capsys):

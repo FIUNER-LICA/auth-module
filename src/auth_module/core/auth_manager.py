@@ -7,7 +7,7 @@ from typing import Any
 
 from .db.repository import UserRepository
 from .i18n import I18nManager
-from .mail.base import MailDispatcher
+from .mail.dispatchers.base import MailDispatcher
 from .security.hasher import PasswordHasher, WerkzeugPasswordHasher
 from .security.password import PasswordPolicy
 from .tokens import TokenManager

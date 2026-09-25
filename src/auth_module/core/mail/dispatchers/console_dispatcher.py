@@ -11,7 +11,7 @@ class ConsoleMailDispatcher(MailDispatcher):
     Useful for local development and testing.
     """
 
-    def send(self, to_email: str, subject: str, body: str, logo_image_file: str | None = None) -> None:
+    def send(self, to_email: str, subject: str, body: str) -> None:
         """
         Simulates sending an email by printing to the console.
 
@@ -19,13 +19,10 @@ class ConsoleMailDispatcher(MailDispatcher):
             to_email (str): Recipient email address.
             subject (str): Email subject.
             body (str): Email body.
-            logo_image_file (str | None): Optional path to an image attachment.
         """
         print('--- [CONSOLE MAIL DISPATCHER] ---')
         print(f'To: {to_email}')
         print(f'Subject: {subject}')
-        if logo_image_file:
-            print(f'Attachment: {logo_image_file}')
         print('Body:')
         print(body)
         print('---------------------------------')
