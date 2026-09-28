@@ -20,19 +20,19 @@ Since this package was designed as a modular library, the most practical way to 
 ### Install with pip
 Activate your main project's virtual environment and install the module according to your needs.
 
-Basic Installation (Core Only, no Flask) of version "v1.1.0":
+Basic Installation (Core Only, no Flask) of version "v1.2.0":
 ```bash
-pip install git+https://github.com/FIUNER-LICA/auth-module.git@v1.1.0
+pip install git+https://github.com/FIUNER-LICA/auth-module.git@v1.2.0
 ```
 
 Flask Installation (Includes web dependencies and views):
 ```bash
-pip install "git+https://github.com/FIUNER-LICA/auth-module.git@v1.1.0[flask]"
+pip install "git+https://github.com/FIUNER-LICA/auth-module.git@v1.2.0[flask]"
 ```
 
 Complete Installation (Includes optional dependencies like Flask and OAuth):
 ```bash
-pip install "git+https://github.com/FIUNER-LICA/auth-module.git@v1.1.0[flask,oauth]"
+pip install "git+https://github.com/FIUNER-LICA/auth-module.git@v1.2.0[flask,oauth]"
 ```
 
 ---
