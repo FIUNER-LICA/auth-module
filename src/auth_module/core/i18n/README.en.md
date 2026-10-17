@@ -12,7 +12,7 @@ The core component is the `I18nManager` class. This component is responsible for
 The library includes two built-in languages: **Spanish (`es`)** and **English (`en`)**. By project convention, **the base and default language is Spanish.**
 
 The backend keys (defined in `BACKEND_TRANSLATIONS`) cover the deepest messages of the system:
-- Database or validation errors (`user_exists`, `user_not_exists`).
+- Database or validation errors (`user_not_exists`).
 - Errors originating from security policies (e.g. `password_length_err`).
 - Subjects and body texts for the mail dispatchers (MailDispatchers).
 - Explicit exceptions intended for developers.
@@ -30,10 +30,10 @@ Initialize the `AuthManager` or `FlaskExtension` with the `custom_translations` 
 # Custom translations for the backend
 custom_backend_translations = {
     'es': {
-        'user_exists': '¡Esta dirección de correo ya está en uso!'
+        'account_exists_email_body': 'Ya tienes una cuenta, simplemente inicia sesión.'
     },
     'en': {
-        'user_exists': 'This email is already registered.'
+        'account_exists_email_body': 'You already have an account, simply sign in.'
     }
 }
 

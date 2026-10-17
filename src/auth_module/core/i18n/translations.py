@@ -6,12 +6,17 @@ BACKEND_TRANSLATIONS = {
     'en': {
         'secret_key_required': 'A secret_key is required for token generation.',
         'base_url_required': 'A base_url must be provided for generating absolute links.',
-        'user_exists': 'User already exists',
         'user_not_exists': 'User does not exist',
         'email_not_verified': 'Email is not verified',
         'db_path_required': 'A db_path must be provided to initialize the SQLite repository.',
         'confirm_email_subject': 'Confirm your account',
         'confirm_email_body': 'Please confirm your email by clicking here: {url}',
+        'account_exists_email_subject': 'Registration attempt with your email',
+        'account_exists_email_body': (
+            'Someone recently tried to create an account using your email address. '
+            'Since you already have an account, you can simply sign in. '
+            'If it was not you, you can safely ignore this message.'
+        ),
         'password_recovery_subject': 'Password Recovery',
         'password_recovery_body': 'To reset your password, please click here: {url}',
         'password_length_err': 'Password must be at least {value} characters long.',
@@ -24,12 +29,17 @@ BACKEND_TRANSLATIONS = {
     'es': {
         'secret_key_required': 'Se requiere un secret_key para generar tokens.',
         'base_url_required': 'Se debe proporcionar un base_url para generar enlaces absolutos.',
-        'user_exists': 'El usuario ya existe',
         'user_not_exists': 'El usuario no existe',
         'email_not_verified': 'El correo electrónico no está verificado',
         'db_path_required': 'Se debe proporcionar un db_path para inicializar el repositorio SQLite.',
         'confirm_email_subject': 'Confirma tu cuenta',
         'confirm_email_body': 'Por favor confirma tu correo haciendo clic aquí: {url}',
+        'account_exists_email_subject': 'Intento de registro con tu correo',
+        'account_exists_email_body': (
+            'Alguien intentó recientemente crear una cuenta usando tu correo. '
+            'Como ya tienes una cuenta, simplemente puedes iniciar sesión. '
+            'Si no fuiste tú, puedes ignorar este mensaje.'
+        ),
         'password_recovery_subject': 'Recuperación de contraseña',
         'password_recovery_body': 'Para restablecer tu contraseña, haz clic aquí: {url}',
         'password_length_err': 'La contraseña debe tener al menos {value} caracteres.',

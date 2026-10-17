@@ -244,7 +244,7 @@ auth_manager = AuthManager(
     locale='es',                      # Idioma del backend ('es' o 'en', por defecto 'es')
     custom_translations={             # Sobrescribir o añadir traducciones backend
         'es': {
-            'user_exists': '¡Esta dirección de correo ya está en uso!'
+            'account_exists_email_body': 'Ya tienes una cuenta, simplemente inicia sesión.'
         }
     }
 )

@@ -71,6 +71,25 @@ def test_register_post(test_client):
     assert manager._AuthManager__user_repository.get_user_by_email('newuser@test.com') is not None
 
 
+def test_register_post_existing_email_is_indistinguishable(test_client):
+    """Registering an already-used email must look identical to a fresh registration."""
+    client, manager = test_client
+    manager.register_user('taken@test.com', 'Password123!')
+
+    payload = {'password': 'Password123!', 'repassword': 'Password123!'}
+    existing = client.post('/auth/register', data={'email': 'taken@test.com', **payload})
+    fresh = client.post('/auth/register', data={'email': 'fresh@test.com', **payload})
+
+    assert existing.status_code == fresh.status_code == 302
+    assert existing.location == fresh.location
+
+    with client.session_transaction() as sess:
+        flashes = sess.get('_flashes', [])
+    assert len(flashes) == 2
+    assert flashes[0] == flashes[1]
+    assert flashes[0][0] == 'success'
+
+
 def test_login_post(test_client):
     client, manager = test_client
     manager.register_user('user@test.com', 'Password123!')

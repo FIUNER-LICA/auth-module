@@ -242,7 +242,7 @@ auth_manager = AuthManager(
     locale='es',                      # Backend locale ('es' or 'en', defaults to 'es')
     custom_translations={             # Override or add backend translations
         'en': {
-            'user_exists': 'This email is already registered.'
+            'account_exists_email_body': 'You already have an account, simply sign in.'
         }
     }
 )
