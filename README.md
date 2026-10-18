@@ -289,20 +289,25 @@ app.config['AUTH_FRONTEND_LOCALE'] = 'en'  # Sobrescribe el idioma de las planti
 
 ## Testing
 
-El proyecto cuenta con pruebas automáticas bajo la carpeta [tests/](tests). Para correrlas todas, primero debes instalar las dependencias de desarrollo (definidas en el grupo `dev` en `pyproject.toml` según el estándar [PEP 735](https://peps.python.org/pep-0735/)):
+El proyecto cuenta con pruebas automáticas bajo la carpeta [tests/](tests). Las dependencias necesarias para correrlas están definidas en grupos de dependencias de `pyproject.toml`, según el estándar [PEP 735](https://peps.python.org/pep-0735/):
 
-Si usas **uv**, puedes sincronizar todas las dependencias (incluidas las opcionales y de desarrollo) ejecutando:
+| Grupo | Contenido | Cuándo usarlo |
+| :--- | :--- | :--- |
+| `test` | `pytest`, `pytest-cov`, `coverage`, `cachelib` y el stack de Flask que usan las pruebas | Correr los tests (por ejemplo, en CI o en herramientas de análisis de código) |
+| `dev` | Incluye `test` + `build` | Desarrollo local |
+
+Si usas **uv**, sincroniza el entorno (incluye el grupo `dev` por defecto) ejecutando:
 ```bash
 uv sync --all-extras
 ```
 
-Si usas **pip** (requiere `pip >= 25.1`):
+Si usas **pip** (requiere `pip >= 25.1`), desde la raíz del repositorio, en un entorno limpio:
 ```bash
-pip install -e ./libs/auth-module --group dev
+pip install . --group test
 ```
 *(Nota: Si tu versión de pip es menor a la 25.1, puedes actualizarla con `pip install --upgrade pip`).*
 
 Luego, ejecuta pytest:
 ```bash
-pytest libs/auth-module/tests/
+pytest
 ```

@@ -287,20 +287,25 @@ app.config['AUTH_FRONTEND_LOCALE'] = 'en'  # Overrides the templates and flash m
 
 ## Testing
 
-The project is fully covered by automated tests under the [tests/](tests) folder. To run them, you first need to install the development dependencies (defined in the `dev` group of `pyproject.toml` under the [PEP 735](https://peps.python.org/pep-0735/) standard):
+The project is fully covered by automated tests under the [tests/](tests) folder. The dependencies required to run them are defined as dependency groups in `pyproject.toml` under the [PEP 735](https://peps.python.org/pep-0735/) standard:
 
-If using **uv**, you can sync all dependencies (including optional extras and development tools) by running:
+| Group | Contents | When to use it |
+| :--- | :--- | :--- |
+| `test` | `pytest`, `pytest-cov`, `coverage`, `cachelib` and the Flask stack used by the tests | Running the tests (e.g. in CI or code analysis tools) |
+| `dev` | Includes `test` + `build` | Local development |
+
+If using **uv**, sync the environment (it includes the `dev` group by default) by running:
 ```bash
 uv sync --all-extras
 ```
 
-If using **pip** (requires `pip >= 25.1`):
+If using **pip** (requires `pip >= 25.1`), from the repository root, in a clean environment:
 ```bash
-pip install -e ./libs/auth-module --group dev
+pip install . --group test
 ```
 *(Note: If you have an older version of pip, you can upgrade it via `pip install --upgrade pip`).*
 
 Then, run pytest:
 ```bash
-pytest libs/auth-module/tests/
+pytest
 ```

@@ -28,7 +28,16 @@ oauth = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "auth-module", extra = ["flask", "oauth"] },
     { name = "build" },
+    { name = "cachelib" },
+    { name = "coverage" },
+    { name = "pytest" },
+    { name = "pytest-cov" },
+]
+test = [
+    { name = "auth-module", extra = ["flask", "oauth"] },
+    { name = "cachelib" },
     { name = "coverage" },
     { name = "pytest" },
     { name = "pytest-cov" },
@@ -52,7 +61,16 @@ provides-extras = ["flask", "oauth"]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "auth-module", extras = ["flask", "oauth"] },
     { name = "build", specifier = ">=1.5.0" },
+    { name = "cachelib", specifier = ">=0.17.0" },
+    { name = "coverage", specifier = ">=7.15.4" },
+    { name = "pytest", specifier = ">=9.1.1" },
+    { name = "pytest-cov", specifier = ">=7.1.0" },
+]
+test = [
+    { name = "auth-module", extras = ["flask", "oauth"] },
+    { name = "cachelib", specifier = ">=0.17.0" },
     { name = "coverage", specifier = ">=7.15.4" },
     { name = "pytest", specifier = ">=9.1.1" },
     { name = "pytest-cov", specifier = ">=7.1.0" },
