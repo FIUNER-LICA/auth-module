@@ -20,19 +20,19 @@ Como este paquete fue diseñado como una librería modular, la forma más práct
 ### Instalar con pip
 Activa el entorno virtual de tu proyecto principal e instala el módulo según tus necesidades.
 
-Instalación Básica (Solo Core, sin Flask) de la versión "v1.1.0":
+Instalación Básica (Solo Core, sin Flask) de la versión "v1.2.0":
 ```bash
-pip install git+https://github.com/FIUNER-LICA/auth-module.git@v1.1.0
+pip install git+https://github.com/FIUNER-LICA/auth-module.git@v1.2.0
 ```
 
 Instalación con Flask (Incluye dependencias web y vistas):
 ```bash
-pip install "git+https://github.com/FIUNER-LICA/auth-module.git@v1.1.0[flask]"
+pip install "git+https://github.com/FIUNER-LICA/auth-module.git@v1.2.0[flask]"
 ```
 
 Instalación con Flask y OAuth (Funcionalidades web completas):
 ```bash
-pip install "git+https://github.com/FIUNER-LICA/auth-module.git@v1.1.0[flask,oauth]"
+pip install "git+https://github.com/FIUNER-LICA/auth-module.git@v1.2.0[flask,oauth]"
 ```
 
 ---
@@ -47,7 +47,7 @@ Ver el ejemplo completo en: [examples/01_core_backend/main.py](examples/01_core_
 ```python
 from auth_module.core.auth_manager import AuthManager
 from auth_module.core.db.sqlite_repository import SQLiteUserRepository
-from auth_module.core.mail.console_dispatcher import ConsoleMailDispatcher
+from auth_module.core.mail.dispatchers import ConsoleMailDispatcher
 
 # 1. Base de Datos
 repo = SQLiteUserRepository(db_path='/ruta/absoluta/usuarios.db')
@@ -164,9 +164,9 @@ Integra el Módulo de Autenticación en una aplicación Python para una gestión
 - PasswordHasher: Utiliza `WerkzeugPasswordHasher` por defecto (scrypt).
 
 ### Despacho de Correos (auth_module.core.mail)
-- MailBase: Interfaz abstracta para enviar correos.
-- ConsoleMailDispatcher: Para desarrollo local. Imprime los correos en consola.
-- SmtpMailDispatcher: Para producción. Conecta a servidores SMTP reales.
+- MailDispatcher (en `dispatchers/base.py`): Interfaz abstracta para enviar correos que permite inyectar HTML de forma dinámica.
+- ConsoleMailDispatcher (en `dispatchers/`): Para desarrollo local. Imprime los correos en consola.
+- SmtpMailDispatcher (en `dispatchers/`): Para producción. Conecta a servidores SMTP reales.
 
 ### Extensión de Flask (auth_module.flask_ext)
 - FlaskExtension(app, manager, login_redirect_endpoint): Registra automáticamente blueprints, manejadores de error, plantillas y configura la redirección post-login.
@@ -182,7 +182,7 @@ La lógica core requiere inyección de dependencias. Debes proveer un despachado
 ## Ejemplo: Uso del Backend Core (Python)
 from auth_module.core.auth_manager import AuthManager
 from auth_module.core.db.sqlite_repository import SQLiteUserRepository
-from auth_module.core.mail.console_dispatcher import ConsoleMailDispatcher
+from auth_module.core.mail.dispatchers import ConsoleMailDispatcher
 
 repo = SQLiteUserRepository(db_path='./users.db')
 mail = ConsoleMailDispatcher()
@@ -244,7 +244,7 @@ auth_manager = AuthManager(
     locale='es',                      # Idioma del backend ('es' o 'en', por defecto 'es')
     custom_translations={             # Sobrescribir o añadir traducciones backend
         'es': {
-            'user_exists': '¡Esta dirección de correo ya está en uso!'
+            'account_exists_email_body': 'Ya tienes una cuenta, simplemente inicia sesión.'
         }
     }
 )
@@ -289,20 +289,25 @@ app.config['AUTH_FRONTEND_LOCALE'] = 'en'  # Sobrescribe el idioma de las planti
 
 ## Testing
 
-El proyecto cuenta con pruebas automáticas bajo la carpeta [tests/](tests). Para correrlas todas, primero debes instalar las dependencias de desarrollo (definidas en el grupo `dev` en `pyproject.toml` según el estándar [PEP 735](https://peps.python.org/pep-0735/)):
+El proyecto cuenta con pruebas automáticas bajo la carpeta [tests/](tests). Las dependencias necesarias para correrlas están definidas en grupos de dependencias de `pyproject.toml`, según el estándar [PEP 735](https://peps.python.org/pep-0735/):
 
-Si usas **uv**:
+| Grupo | Contenido | Cuándo usarlo |
+| :--- | :--- | :--- |
+| `test` | `pytest`, `pytest-cov`, `coverage`, `cachelib` y el stack de Flask que usan las pruebas | Correr los tests (por ejemplo, en CI o en herramientas de análisis de código) |
+| `dev` | Incluye `test` + `build` | Desarrollo local |
+
+Si usas **uv**, sincroniza el entorno (incluye el grupo `dev` por defecto) ejecutando:
 ```bash
-uv sync --group dev
+uv sync --all-extras
 ```
 
-Si usas **pip** (requiere `pip >= 25.1`):
+Si usas **pip** (requiere `pip >= 25.1`), desde la raíz del repositorio, en un entorno limpio:
 ```bash
-pip install -e ./libs/auth-module --group dev
+pip install . --group test
 ```
 *(Nota: Si tu versión de pip es menor a la 25.1, puedes actualizarla con `pip install --upgrade pip`).*
 
 Luego, ejecuta pytest:
 ```bash
-pytest libs/auth-module/tests/
+pytest
 ```

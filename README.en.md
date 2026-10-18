@@ -20,19 +20,19 @@ Since this package was designed as a modular library, the most practical way to 
 ### Install with pip
 Activate your main project's virtual environment and install the module according to your needs.
 
-Basic Installation (Core Only, no Flask) of version "v1.1.0":
+Basic Installation (Core Only, no Flask) of version "v1.2.0":
 ```bash
-pip install git+https://github.com/FIUNER-LICA/auth-module.git@v1.1.0
+pip install git+https://github.com/FIUNER-LICA/auth-module.git@v1.2.0
 ```
 
 Flask Installation (Includes web dependencies and views):
 ```bash
-pip install "git+https://github.com/FIUNER-LICA/auth-module.git@v1.1.0[flask]"
+pip install "git+https://github.com/FIUNER-LICA/auth-module.git@v1.2.0[flask]"
 ```
 
 Complete Installation (Includes optional dependencies like Flask and OAuth):
 ```bash
-pip install "git+https://github.com/FIUNER-LICA/auth-module.git@v1.1.0[flask,oauth]"
+pip install "git+https://github.com/FIUNER-LICA/auth-module.git@v1.2.0[flask,oauth]"
 ```
 
 ---
@@ -47,7 +47,7 @@ See the full example at: [examples/01_core_backend/main.py](examples/01_core_bac
 ```python
 from auth_module.core.auth_manager import AuthManager
 from auth_module.core.db.sqlite_repository import SQLiteUserRepository
-from auth_module.core.mail.console_dispatcher import ConsoleMailDispatcher
+from auth_module.core.mail.dispatchers import ConsoleMailDispatcher
 
 # 1. Database
 repo = SQLiteUserRepository(db_path='/absolute/path/users.db')
@@ -164,9 +164,9 @@ Integrate Authentication Module into a Python application for robust, framework-
 - PasswordHasher: Uses `WerkzeugPasswordHasher` by default (scrypt).
 
 ### Mail Dispatching (auth_module.core.mail)
-- MailBase: Abstract interface for sending emails.
-- ConsoleMailDispatcher: For local development. Prints emails to stdout.
-- SmtpMailDispatcher: For production. Connects to real SMTP servers.
+- MailDispatcher (in `dispatchers/base.py`): Abstract interface for sending emails that allows dynamic HTML injection.
+- ConsoleMailDispatcher (in `dispatchers/`): For local development. Prints emails to stdout.
+- SmtpMailDispatcher (in `dispatchers/`): For production. Connects to real SMTP servers.
 
 ### Flask Extension (auth_module.flask_ext)
 - FlaskExtension(app, manager, login_redirect_endpoint): Automatically registers blueprints, error handlers, templates and configures post-login redirection.
@@ -182,7 +182,7 @@ The core logic requires dependency injection. You must provide a mail dispatcher
 ## Example: Core Backend Usage (Python)
 from auth_module.core.auth_manager import AuthManager
 from auth_module.core.db.sqlite_repository import SQLiteUserRepository
-from auth_module.core.mail.console_dispatcher import ConsoleMailDispatcher
+from auth_module.core.mail.dispatchers import ConsoleMailDispatcher
 
 repo = SQLiteUserRepository(db_path='./users.db')
 mail = ConsoleMailDispatcher()
@@ -242,7 +242,7 @@ auth_manager = AuthManager(
     locale='es',                      # Backend locale ('es' or 'en', defaults to 'es')
     custom_translations={             # Override or add backend translations
         'en': {
-            'user_exists': 'This email is already registered.'
+            'account_exists_email_body': 'You already have an account, simply sign in.'
         }
     }
 )
@@ -287,20 +287,25 @@ app.config['AUTH_FRONTEND_LOCALE'] = 'en'  # Overrides the templates and flash m
 
 ## Testing
 
-The project is fully covered by automated tests under the [tests/](tests) folder. To run them, you first need to install the development dependencies (defined in the `dev` group of `pyproject.toml` under the [PEP 735](https://peps.python.org/pep-0735/) standard):
+The project is fully covered by automated tests under the [tests/](tests) folder. The dependencies required to run them are defined as dependency groups in `pyproject.toml` under the [PEP 735](https://peps.python.org/pep-0735/) standard:
 
-If using **uv**:
+| Group | Contents | When to use it |
+| :--- | :--- | :--- |
+| `test` | `pytest`, `pytest-cov`, `coverage`, `cachelib` and the Flask stack used by the tests | Running the tests (e.g. in CI or code analysis tools) |
+| `dev` | Includes `test` + `build` | Local development |
+
+If using **uv**, sync the environment (it includes the `dev` group by default) by running:
 ```bash
-uv sync --group dev
+uv sync --all-extras
 ```
 
-If using **pip** (requires `pip >= 25.1`):
+If using **pip** (requires `pip >= 25.1`), from the repository root, in a clean environment:
 ```bash
-pip install -e ./libs/auth-module --group dev
+pip install . --group test
 ```
 *(Note: If you have an older version of pip, you can upgrade it via `pip install --upgrade pip`).*
 
 Then, run pytest:
 ```bash
-pytest libs/auth-module/tests/
+pytest
 ```

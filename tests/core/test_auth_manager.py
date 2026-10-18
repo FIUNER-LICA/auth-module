@@ -5,7 +5,7 @@ import pytest
 
 from auth_module.core.auth_manager import AuthManager
 from auth_module.core.db.sqlite_repository import SQLiteUserRepository
-from auth_module.core.mail.base import MailDispatcher
+from auth_module.core.mail.dispatchers.base import MailDispatcher
 
 
 class MockMailDispatcher(MailDispatcher):
@@ -14,7 +14,7 @@ class MockMailDispatcher(MailDispatcher):
     def __init__(self):
         self.sent_emails = []
 
-    def send(self, to_email: str, subject: str, body: str, logo_image_file: str | None = None) -> bool:
+    def send(self, to_email: str, subject: str, body: str) -> bool:
         self.sent_emails.append({'to': to_email, 'subject': subject, 'body': body})
         return True
 
@@ -52,10 +52,31 @@ def test_register_user_invalid_password(auth_manager):
         auth_manager.register_user('test@example.com', 'short')
 
 def test_register_duplicate_user(auth_manager):
-    """Test that registering a user with an email that already exists raises an error."""
+    """Test that registering an existing email does not raise (anti-enumeration) and notifies the owner."""
     auth_manager.register_user('test@example.com', 'ValidPass123!')
-    with pytest.raises(ValueError, match='already exists'):
-        auth_manager.register_user('test@example.com', 'AnotherPass123!')
+    mail = auth_manager._AuthManager__mail_dispatcher
+
+    assert auth_manager.register_user('test@example.com', 'AnotherPass123!') is True
+
+    # 1 verification email + 1 "account already exists" notice, no verification link in the latter
+    assert len(mail.sent_emails) == 2
+    notice = mail.sent_emails[1]
+    assert notice['to'] == 'test@example.com'
+    assert notice['subject'] == 'Registration attempt with your email'
+    assert 'already have an account' in notice['body']
+    assert 'http' not in notice['body']
+
+    # Original credentials remain untouched
+    token = auth_manager._AuthManager__token_manager.generate_token({'email': 'test@example.com', 'purpose': 'verification'})
+    auth_manager.verify_user(token)
+    assert auth_manager.authenticate_user('test@example.com', 'ValidPass123!') is True
+    assert auth_manager.authenticate_user('test@example.com', 'AnotherPass123!') is False
+
+def test_register_duplicate_user_invalid_password(auth_manager):
+    """Test that the password policy is validated before the existence check, so the outcome is identical."""
+    auth_manager.register_user('test@example.com', 'ValidPass123!')
+    with pytest.raises(ValueError, match='must be at least 8 characters'):
+        auth_manager.register_user('test@example.com', 'short')
 
 def test_verify_user(auth_manager):
     """Test verifying a user using a valid token."""
@@ -101,9 +122,8 @@ def test_request_password_recovery(auth_manager):
     assert len(auth_manager._AuthManager__mail_dispatcher.sent_emails) == 2
     assert 'Recovery' in auth_manager._AuthManager__mail_dispatcher.sent_emails[1]['subject'] or 'recuperación' in auth_manager._AuthManager__mail_dispatcher.sent_emails[1]['body'].lower()
 
-    # Unregistered email should silently fail or log, but currently it raises ValueError
-    with pytest.raises(ValueError, match='No user exists'):
-        auth_manager.request_password_recovery('nobody@example.com')
+    # Unregistered email should silently return None to prevent user enumeration
+    assert auth_manager.request_password_recovery('nobody@example.com') is None
 
 def test_reset_password(auth_manager):
     """Test resetting a user's password and ensure they can authenticate with the new password."""
@@ -134,10 +154,12 @@ def test_i18n_spanish_backend(tmp_path):
         locale='es'
     )
 
-    # 1. Test duplicate user error in Spanish
+    # 1. Test duplicate user sends a Spanish notice instead of raising
     manager.register_user('es@example.com', 'ValidPass123!')
-    with pytest.raises(ValueError, match='El usuario ya existe'):
-        manager.register_user('es@example.com', 'AnotherPass123!')
+    manager.register_user('es@example.com', 'AnotherPass123!')
+    assert mail.sent_emails[1]['subject'] == 'Intento de registro con tu correo'
+    assert 'Como ya tienes una cuenta' in mail.sent_emails[1]['body']
+    mail.sent_emails.pop()
 
     # 2. Test password length error in Spanish
     with pytest.raises(ValueError, match='La contraseña debe tener al menos 8 caracteres'):
@@ -155,7 +177,7 @@ def test_i18n_custom_translations(tmp_path):
     mail = MockMailDispatcher()
     custom_translations = {
         'en': {
-            'user_exists': 'This email is already registered, try signing in.'
+            'account_exists_email_body': 'You already have an account, try signing in.'
         }
     }
     manager = AuthManager(
@@ -168,8 +190,8 @@ def test_i18n_custom_translations(tmp_path):
     )
 
     manager.register_user('custom@example.com', 'ValidPass123!')
-    with pytest.raises(ValueError, match='This email is already registered, try signing in.'):
-        manager.register_user('custom@example.com', 'AnotherPass123!')
+    manager.register_user('custom@example.com', 'AnotherPass123!')
+    assert mail.sent_emails[1]['body'] == 'You already have an account, try signing in.'
 
 def test_i18n_callable_locale(tmp_path):
     """Test that dynamic locale resolution using a callback works."""
@@ -191,14 +213,14 @@ def test_i18n_callable_locale(tmp_path):
 
     manager.register_user('dynamic@example.com', 'ValidPass123!')
 
-    # 1. With locale='en', expect English error
-    with pytest.raises(ValueError, match='User already exists'):
-        manager.register_user('dynamic@example.com', 'AnotherPass123!')
+    # 1. With locale='en', expect English notice
+    manager.register_user('dynamic@example.com', 'AnotherPass123!')
+    assert mail.sent_emails[-1]['subject'] == 'Registration attempt with your email'
 
-    # 2. Change dynamic locale to 'es', expect Spanish error
+    # 2. Change dynamic locale to 'es', expect Spanish notice
     current_locale = 'es'
-    with pytest.raises(ValueError, match='El usuario ya existe'):
-        manager.register_user('dynamic@example.com', 'AnotherPass123!')
+    manager.register_user('dynamic@example.com', 'AnotherPass123!')
+    assert mail.sent_emails[-1]['subject'] == 'Intento de registro con tu correo'
 
 def test_auth_manager_invalid_policy_type(tmp_path):
     """Test that AuthManager raises TypeError if password_policy is not a PasswordPolicy instance."""
@@ -220,15 +242,14 @@ def test_password_recovery(auth_manager):
     manager = auth_manager
     email = 'recover@example.com'
 
-    # 1. User must exist
-    with pytest.raises(ValueError):
-        manager.request_password_recovery(email)
+    # 1. User must exist (but now it returns silently)
+    assert manager.request_password_recovery(email) is None
 
     manager.register_user(email, 'Pass1234!')
     manager._AuthManager__user_repository.update_user_verification(email, True)
 
-    # 2. Request recovery
-    assert manager.request_password_recovery(email) is True
+    # 2. Request recovery (returns None)
+    assert manager.request_password_recovery(email) is None
 
     # 3. Generate token to verify.
     token = manager._AuthManager__token_manager.generate_token({'email': email, 'purpose': 'recovery'})

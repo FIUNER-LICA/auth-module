@@ -1,0 +1,26 @@
+body {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0;
+}
+.auth-container {
+    width: 100%;
+    max-width: 450px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 2.5rem 2rem;
+    margin: 1rem;
+}
+.auth-logo {
+    width: 100%;
+    max-width: 400px;
+    border-radius: 10px;
+}
+@media (max-width: 500px) {
+    .auth-container {
+        padding: 1.5rem 1rem;
+    }
+}

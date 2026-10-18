@@ -8,12 +8,12 @@ from flask import Flask
 
 from auth_module.core.auth_manager import AuthManager
 from auth_module.core.db.sqlite_repository import SQLiteUserRepository
-from auth_module.core.mail.base import MailDispatcher
+from auth_module.core.mail.dispatchers.base import MailDispatcher
 from auth_module.flask_ext.extension import FlaskExtension
 
 
 class MockMailDispatcher(MailDispatcher):
-    def send(self, to_email: str, subject: str, body: str, logo_image_file: str | None = None) -> bool:
+    def send(self, to_email: str, subject: str, body: str) -> bool:
         return True
 
 
@@ -69,6 +69,25 @@ def test_register_post(test_client):
     # After register, redirects to login
     assert response.status_code == 302
     assert manager._AuthManager__user_repository.get_user_by_email('newuser@test.com') is not None
+
+
+def test_register_post_existing_email_is_indistinguishable(test_client):
+    """Registering an already-used email must look identical to a fresh registration."""
+    client, manager = test_client
+    manager.register_user('taken@test.com', 'Password123!')
+
+    payload = {'password': 'Password123!', 'repassword': 'Password123!'}
+    existing = client.post('/auth/register', data={'email': 'taken@test.com', **payload})
+    fresh = client.post('/auth/register', data={'email': 'fresh@test.com', **payload})
+
+    assert existing.status_code == fresh.status_code == 302
+    assert existing.location == fresh.location
+
+    with client.session_transaction() as sess:
+        flashes = sess.get('_flashes', [])
+    assert len(flashes) == 2
+    assert flashes[0] == flashes[1]
+    assert flashes[0][0] == 'success'
 
 
 def test_login_post(test_client):

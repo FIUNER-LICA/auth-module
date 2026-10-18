@@ -7,7 +7,7 @@ from typing import Any
 
 from .db.repository import UserRepository
 from .i18n import I18nManager
-from .mail.base import MailDispatcher
+from .mail.dispatchers.base import MailDispatcher
 from .security.hasher import PasswordHasher, WerkzeugPasswordHasher
 from .security.password import PasswordPolicy
 from .tokens import TokenManager
@@ -73,17 +73,29 @@ class AuthManager:
             password (str): The user's plain text password.
 
         Returns:
-            bool: True if registration is successful.
+            bool: True if the request was processed (always, when the password is valid).
 
         Raises:
-            ValueError: If the user already exists or the password doesn't meet the policy.
-        """
-        if self.__user_repository.get_user_by_email(email):
-            raise ValueError(self.__i18n.translate('user_exists'))
+            ValueError: If the password doesn't meet the policy.
 
+        Note:
+            To prevent user enumeration attacks, no error is raised when the email is
+            already registered. Instead, the existing account's owner receives an
+            informational email and the caller observes the same successful outcome as
+            for a new registration. The password policy is validated first so the
+            outcome does not depend on whether the email exists.
+        """
         is_valid_pwd, pwd_msg = self.__password_policy.validate(password, i18n_manager=self.__i18n)
         if not is_valid_pwd:
             raise ValueError(pwd_msg)
+
+        if self.__user_repository.get_user_by_email(email):
+            self.__mail_dispatcher.send(
+                to_email=email,
+                subject=self.__i18n.translate('account_exists_email_subject'),
+                body=self.__i18n.translate('account_exists_email_body')
+            )
+            return True
 
         pwd_hash = self.__password_hasher.hash(password)
         self.__user_repository.create_user(email=email, password_hash=pwd_hash, verified=False)
@@ -223,21 +235,20 @@ class AuthManager:
         )
         return self.__user_repository.get_user_by_email(email)
 
-    def request_password_recovery(self, email: str) -> bool:
+    def request_password_recovery(self, email: str) -> None:
         """
         Initiates a password recovery process and sends a recovery email.
 
         Args:
             email (str): The user's email.
 
-        Returns:
-            bool: True if the email was successfully sent.
-
-        Raises:
-            ValueError: If the user does not exist.
+        Note:
+            To prevent user enumeration attacks, this method always returns None
+            and executes silently even if the email does not exist in the database.
         """
         if not self.__user_repository.get_user_by_email(email):
-            raise ValueError(self.__i18n.translate('no_user_with_email'))
+            # Return silently to prevent user enumeration
+            return
 
         token = self.__token_manager.generate_token({'email': email, 'purpose': 'recovery'})
         recovery_url = f'{self.__base_url}/reset-password/{token}'
@@ -247,7 +258,6 @@ class AuthManager:
             subject=self.__i18n.translate('password_recovery_subject'),
             body=self.__i18n.translate('password_recovery_body', url=recovery_url)
         )
-        return True
 
     def set_locale(self, locale: str) -> None:
         """Sets the locale for the backend translator."""

@@ -7,7 +7,7 @@ from unittest.mock import patch
 import pytest
 
 from auth_module.core.mail.config import EmailEnvConfig
-from auth_module.core.mail.smtp_dispatcher import SmtpMailDispatcher
+from auth_module.core.mail.dispatchers import SmtpMailDispatcher
 
 
 def test_email_env_config(monkeypatch):
@@ -32,7 +32,7 @@ def test_email_env_config(monkeypatch):
     assert config.mail_sender_address == 'sender@test.com'
     assert config.name_sender == 'Test Sender'
 
-@patch('auth_module.core.mail.smtp_dispatcher.Mail')
+@patch('auth_module.core.mail.dispatchers.smtp_dispatcher.Mail')
 def test_smtp_mail_dispatcher_success(mock_mail_class, monkeypatch):
     """Test successful email dispatch using SmtpMailDispatcher."""
     # Set required env vars to avoid validation errors
@@ -56,7 +56,7 @@ def test_smtp_mail_dispatcher_success(mock_mail_class, monkeypatch):
     mock_mail_instance = mock_mail_class.return_value
     mock_mail_instance.send.assert_called_once()
 
-@patch('auth_module.core.mail.smtp_dispatcher.Mail')
+@patch('auth_module.core.mail.dispatchers.smtp_dispatcher.Mail')
 def test_smtp_mail_dispatcher_failure(mock_mail_class, monkeypatch):
     """Test failure in email dispatch using SmtpMailDispatcher."""
     monkeypatch.setenv('MAIL_SERVER', 'smtp.test.com')
